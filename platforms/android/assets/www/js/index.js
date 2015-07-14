@@ -28,15 +28,32 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
+    onSuccess : function(acceleration) {
+      alert('Acceleration X: ' + acceleration.x + '\n' +
+      'Acceleration Y: ' + acceleration.y + '\n' +
+      'Acceleration Z: ' + acceleration.z + '\n' +
+      'Timestamp: '      + acceleration.timestamp + '\n');
+    },
+    onError : function(){
+      alert('onError!');
+    },
+    onLightSuccess : function(ambientlight) {
+      alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
+      'Timestamp: '      + ambientlight.timestamp + '\n');
+    },
+    onLightError : function(){
+      alert('onError!');
+    },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicity call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
-
+        //var pushNotification = window.plugins.pushNotification;
+        //pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+        //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
+        navigator.photodiode.getCurrentLight(app.onLightSuccess,app.onLightError);
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

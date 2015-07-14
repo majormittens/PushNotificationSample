@@ -1,0 +1,21 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "com.phonegap.plugins.PushPlugin": {
+            "PACKAGE_NAME": "com.pushapp"
+        },
+        "cordova-plugin-device-motion": {
+            "PACKAGE_NAME": "com.pushapp"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.pushapp"
+        }
+    },
+    "dependent_plugins": {}
+}
