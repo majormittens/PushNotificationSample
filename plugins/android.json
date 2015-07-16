@@ -72,7 +72,8 @@
                             "xml": "<service android:name=\"com.plugin.gcm.GCMIntentService\" />",
                             "count": 1
                         }
-                    ]
+                    ],
+                    "/*": []
                 }
             }
         }
