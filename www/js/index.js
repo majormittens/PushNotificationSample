@@ -63,7 +63,7 @@ var app = {
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
   // function, we must explicity call 'app.receivedEvent(...);'
   onDeviceReady: function() {
-    app.receivedEvent('deviceready');
+    //app.receivedEvent('deviceready');
     var pushNotification = window.plugins.pushNotification;
     pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
@@ -75,11 +75,12 @@ var app = {
   // Update DOM on a Received Event
   receivedEvent: function(id) {
     var parentElement = document.getElementById(id);
-    var listeningElement = parentElement.querySelector('.listening');
+    /*var listeningElement = parentElement.querySelector('.listening');
     var receivedElement = parentElement.querySelector('.received');
 
     listeningElement.setAttribute('style', 'display:none;');
-    receivedElement.setAttribute('style', 'display:block;');
+    receivedElement.setAttribute('style', 'display:block;');*/
+
 
     console.log('Received Event: ' + id);
   },
