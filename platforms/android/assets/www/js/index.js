@@ -42,6 +42,8 @@ var app = {
     //alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
     //'Timestamp: '      + ambientlight.timestamp + '\n');
     app.sendPOST(ambientlight);
+    //app.chart.data.dataPoints.push({x:ambientlight.x,y:ambientlight.timestamp});
+    //app.chart.render();
   },
   onLightError : function(){
     alert('onError!');
@@ -49,11 +51,12 @@ var app = {
   sendPOST: function(content) {
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
-    if (req.readyState==4 && (req.status==200 || req.status==0)) {
-    alert("POST Response: " + req.responseText);
-    }
-  };
-    req.open("POST", "http://178.172.47.72:1880/bar", true);  // async
+      if (req.readyState==4 && (req.status==200 || req.status==0)) {
+        //alert("POST Response: " + req.responseText);
+        window.plugins.toast.showLongTop('Successful POST to NodeRED!');
+      }
+    };
+    req.open("POST", "http://178.172.46.5:1880/bar", true);  // async
     req.setRequestHeader('Content-type','application/json; charset=utf-8');
     var postContent = JSON.stringify(content);
     req.send(postContent);
@@ -68,27 +71,49 @@ var app = {
     pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
     //navigator.photodiode.getCurrentLight(app.onLightSuccess,app.onLightError);
+    /*
     var options = { frequency: 3000 };  // Update every 3 seconds
     var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
+    */
+    //alert('starting sensoromatic!');
+    //navigator.photodiode.getAll(app.onSmaticSucc, app.onSmaticErr);
+    //var topbutton = document.getElementById('menuicon');
+    //topbutton.addEventListener("click",app.startLightWatch(10000));
+    app.startLightWatch(10000);
 
+  },
+  startLightWatch: function(freq) {
+    window.plugins.toast.showLongTop('Ambient light watch started!');
+    var options = { frequency: freq };  // Update every freq seconds
+    var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
+  },
+  onSmaticSucc: function(result) {
+    alert('Sensor pooling was successful!');
+  },
+  onSmaticErr: function(error){
+    alert('Sensor data pooling failed.');
   },
   // Update DOM on a Received Event
   receivedEvent: function(id) {
     var parentElement = document.getElementById(id);
-    var listeningElement = parentElement.querySelector('.listening');
+    /*var listeningElement = parentElement.querySelector('.listening');
     var receivedElement = parentElement.querySelector('.received');
 
     listeningElement.setAttribute('style', 'display:none;');
-    receivedElement.setAttribute('style', 'display:block;');
+    receivedElement.setAttribute('style', 'display:block;');*/
+
+
 
     console.log('Received Event: ' + id);
   },
   // result contains any message sent from the push plugin call
   successHandler: function(result) {
-    alert('Callback Success! Result = '+result)
+    //alert('Callback Success! Result = '+result)
+    window.plugins.toast.showLongTop('Successfully connected to nodeRED!');
   },
   errorHandler:function(error) {
-    alert(error);
+    //alert(error);
+    window.plugins.toast.showLongTop(error);
   },
   onNotificationGCM: function(e) {
     switch( e.event )
@@ -97,14 +122,16 @@ var app = {
       if ( e.regid.length > 0 )
       {
         console.log("Regid " + e.regid);
-        alert('registration id = '+e.regid);
+        //alert('registration id = '+e.regid);
+        window.plugins.toast.showLongTop('GCM Registration id = '+e.regid);
         app.sendPOST(e);
       }
       break;
 
       case 'message':
       // this is the actual push notification. its format depends on the data model from the push server
-      alert('message = '+e.message);
+      //alert('message = '+e.message);
+      window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
       break;
 
       case 'error':

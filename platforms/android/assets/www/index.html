@@ -26,16 +26,26 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <link rel="stylesheet" type="text/css" href="css/material.css" />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,300,600,400' rel='stylesheet' type='text/css'>
+        <title>PushNotificationSample</title>
     </head>
     <body>
-        <div class="app">
+<!--        <div class="app">
             <h1>PhoneGap</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
+        </div> -->
+        <div class="app">
+            <div id="menuicon">
+                <div id="midline"></div>
+            </div>
+            <h3><span>Sensing</span> app</h3>
+          <div id="maincol">
+
+          </div>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -43,5 +53,42 @@
         <script type="text/javascript">
             app.initialize();
         </script>
+        <script type="text/javascript" src="js/flotr2.min.js"></script>
+<script type="text/javascript">
+  (function () {
+
+    var
+      container = document.getElementById('maincol'),
+      start = (new Date).getTime(),
+      data, graph, offset, i;
+
+    // Draw a sine curve at time t
+    function animate (t) {
+
+      data = [];
+      offset = 2 * Math.PI * (t - start) / 10000;
+
+      // Sample the sine function
+      for (i = 0; i < 4 * Math.PI; i += 0.2) {
+        data.push([i, Math.sin(i - offset)]);
+      }
+
+      // Draw Graph
+      graph = Flotr.draw(container, [ data ], {
+        yaxis : {
+          max : 2,
+          min : -2
+        }
+      });
+
+      // Animate
+      setTimeout(function () {
+        animate((new Date).getTime());
+      }, 50);
+    }
+
+    animate(start);
+  })();
+</script>
     </body>
 </html>
