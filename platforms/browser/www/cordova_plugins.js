@@ -69,6 +69,13 @@ module.exports = [
     {
         "file": "plugins/nl.x-services.plugins.toast/test/tests.js",
         "id": "nl.x-services.plugins.toast.tests"
+    },
+    {
+        "file": "plugins/com.example.hello/www/hello.js",
+        "id": "com.example.hello.hello",
+        "clobbers": [
+            "hello"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -77,7 +84,8 @@ module.exports.metadata =
     "com.phonegap.plugins.PushPlugin": "2.4.0",
     "cordova-plugin-device-motion": "1.1.2-dev",
     "cordova-plugin-whitelist": "1.0.0",
-    "nl.x-services.plugins.toast": "2.0.4"
+    "nl.x-services.plugins.toast": "2.0.4",
+    "com.example.hello": "0.7.0"
 }
 // BOTTOM OF METADATA
 });

@@ -20,26 +20,6 @@ body {
   width:100%;
 }
 
-#menuicon {
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
-  padding-top: 1px;
-  margin-top: 24px;
-  margin-left: 15%;
-  width: 20px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  background-color: transparent;
-  position: absolute;
-}
-#midline {
-  width: inherit;
-  height: 1px;
-  background-color: white;
-  margin: auto;
-  position: relative;
-}
-
 h3 {
   display: block;
   margin: auto;

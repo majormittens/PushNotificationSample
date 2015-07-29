@@ -39,9 +39,6 @@
             </div>
         </div> -->
         <div class="app">
-            <div id="menuicon">
-                <div id="midline"></div>
-            </div>
             <h3><span>Sensing</span> app</h3>
           <div id="maincol">
 
@@ -54,41 +51,41 @@
             app.initialize();
         </script>
         <script type="text/javascript" src="js/flotr2.min.js"></script>
-<script type="text/javascript">
-  (function () {
-
-    var
-      container = document.getElementById('maincol'),
-      start = (new Date).getTime(),
-      data, graph, offset, i;
-
-    // Draw a sine curve at time t
-    function animate (t) {
-
-      data = [];
-      offset = 2 * Math.PI * (t - start) / 10000;
-
-      // Sample the sine function
-      for (i = 0; i < 4 * Math.PI; i += 0.2) {
-        data.push([i, Math.sin(i - offset)]);
-      }
-
-      // Draw Graph
-      graph = Flotr.draw(container, [ data ], {
-        yaxis : {
-          max : 2,
-          min : -2
-        }
-      });
-
-      // Animate
-      setTimeout(function () {
-        animate((new Date).getTime());
-      }, 50);
-    }
-
-    animate(start);
-  })();
-</script>
+ <script type="text/javascript">
+//   (function () {
+//
+//     var
+//       container = document.getElementById('maincol'),
+//       start = (new Date).getTime(),
+//       data, graph, offset, i;
+//
+//     // Draw a sine curve at time t
+//     function animate (t) {
+//
+//       data = [];
+//       offset = 2 * Math.PI * (t - start) / 10000;
+//
+//       // Sample the sine function
+//       for (i = 0; i < 4 * Math.PI; i += 0.2) {
+//         data.push([i, Math.sin(i - offset)]);
+//       }
+//
+//       // Draw Graph
+//       graph = Flotr.draw(container, [ data ], {
+//         yaxis : {
+//           max : 2,
+//           min : -2
+//         }
+//       });
+//
+//       // Animate
+//       setTimeout(function () {
+//         animate((new Date).getTime());
+//       }, 50);
+//     }
+//
+//     animate(start);
+//   })();
+ </script>
     </body>
 </html>

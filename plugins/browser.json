@@ -18,6 +18,9 @@
         },
         "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "com.pushapp"
+        },
+        "com.example.hello": {
+            "PACKAGE_NAME": "com.pushapp"
         }
     },
     "dependent_plugins": {}

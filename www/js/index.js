@@ -67,31 +67,41 @@ var app = {
   // function, we must explicity call 'app.receivedEvent(...);'
   onDeviceReady: function() {
     app.receivedEvent('deviceready');
-    var pushNotification = window.plugins.pushNotification;
-    pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+    //var pushNotification = window.plugins.pushNotification;
+    //pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
     //navigator.photodiode.getCurrentLight(app.onLightSuccess,app.onLightError);
     /*
     var options = { frequency: 3000 };  // Update every 3 seconds
     var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
     */
-    //alert('starting sensoromatic!');
-    //navigator.photodiode.getAll(app.onSmaticSucc, app.onSmaticErr);
-    //var topbutton = document.getElementById('menuicon');
-    //topbutton.addEventListener("click",app.startLightWatch(10000));
-    app.startLightWatch(10000);
+    //console.log(Sensoromatic);
 
+    //app.startLightWatch(10000);
+    var success = function(message) {
+      console.log(message);
+    }
+
+    var failure = function() {
+      alert("Error calling Hello Plugin");
+    }
+
+    hello.greet("lol", success, failure);
+
+  },
+  sensorListHandler: function(result) {
+    console.log(result);
   },
   startLightWatch: function(freq) {
     window.plugins.toast.showLongTop('Ambient light watch started!');
     var options = { frequency: freq };  // Update every freq seconds
     var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
   },
-  onSmaticSucc: function(result) {
-    alert('Sensor pooling was successful!');
+  onSensorListSuccess: function(result) {
+    console.log(result);
   },
-  onSmaticErr: function(error){
-    alert('Sensor data pooling failed.');
+  onSensorListError: function(){
+    console.log("error");
   },
   // Update DOM on a Received Event
   receivedEvent: function(id) {

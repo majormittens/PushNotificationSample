@@ -10,15 +10,15 @@
     <feature name="Photodiode">
         <param name="android-package" value="org.apache.cordova.devicemotion.LightListener" />
     </feature>
-    <feature name="Sensoromatic">
-        <param name="android-package" value="org.apache.cordova.devicemotion.Sensoromatic" />
-    </feature>
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
     <feature name="Toast">
         <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
+    <feature name="Hello">
+        <param name="android-package" value="com.example.plugin.Hello" />
     </feature>
     <allow-intent href="market:*" />
     <name>PushNotificationApp</name>
