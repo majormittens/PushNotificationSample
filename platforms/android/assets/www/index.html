@@ -1,91 +1,151 @@
 <!DOCTYPE html>
-<!--
-    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/material.css" />
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,300,600,400' rel='stylesheet' type='text/css'>
-        <title>PushNotificationSample</title>
-    </head>
-    <body>
-<!--        <div class="app">
-            <h1>PhoneGap</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-        </div> -->
-        <div class="app">
-            <h3><span>Sensing</span> app</h3>
-          <div id="maincol">
+<head>
+  <title>My App</title>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="app.min.css">
+  <style>
+  /* TODO */
+  .app-topbar {
+    background-color: #009688;
+    text-align: center;
+    box-shadow: 1px 1px 8px 1px #00695C;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    color: white;
+    margin-bottom: 2%;
+    display: flex; /*ensures the page title is centered*/
+  }
 
-          </div>
-        </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="PushNotification.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
-        <script type="text/javascript" src="js/flotr2.min.js"></script>
- <script type="text/javascript">
-//   (function () {
-//
-//     var
-//       container = document.getElementById('maincol'),
-//       start = (new Date).getTime(),
-//       data, graph, offset, i;
-//
-//     // Draw a sine curve at time t
-//     function animate (t) {
-//
-//       data = [];
-//       offset = 2 * Math.PI * (t - start) / 10000;
-//
-//       // Sample the sine function
-//       for (i = 0; i < 4 * Math.PI; i += 0.2) {
-//         data.push([i, Math.sin(i - offset)]);
-//       }
-//
-//       // Draw Graph
-//       graph = Flotr.draw(container, [ data ], {
-//         yaxis : {
-//           max : 2,
-//           min : -2
-//         }
-//       });
-//
-//       // Animate
-//       setTimeout(function () {
-//         animate((new Date).getTime());
-//       }, 50);
-//     }
-//
-//     animate(start);
-//   })();
- </script>
-    </body>
+  </style>
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="PushNotification.js"></script>
+<script type="text/javascript">
+app.initialize();
+</script>
+
+<div class="app-page" data-page="home">
+  <div class="app-topbar">
+    <div class="app-title">Sensor app</div>
+    <div class="app-button left" data-target="configure">Configure</div>
+    <div class="app-button right" data-target="connect">Connect</div>
+  </div>
+  <div class="app-content">
+    <div class="app-section" >
+      <ul class="app-list">
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="app-page" data-page="configure">
+  <div class="app-topbar">
+    <div class="app-button left" data-back data-autotitle></div>
+    <div class="app-title">Configure</div>
+  </div>
+  <div class="app-content">
+    <div class="app-section">
+      <input class="app-input" id="sampling" placeholder="Sampling period [ms]">
+      <div class="app-button" id="samplingbtn">Set sampling period</div>
+    </div>
+    <div class="app-section">
+      <input class="app-input" id="ip" placeholder="Server IP address">
+      <div class="app-button" id="ipbtn">Set IP address</div>
+    </div>
+  </div>
+</div>
+
+<div class="app-page" data-page="connect">
+  <div class="app-topbar">
+    <div class="app-button left" data-back data-autotitle></div>
+    <div class="app-title">Connect to nodeRED</div>
+  </div>
+  <div class="app-content">
+    <div class="app-section">
+      <ul class="app-list">
+        <label id="connectlabel">Connected:</label>
+      </ul>
+      <div class="app-button" id="connectbtn">Connect</div>
+    </div>
+    <div class="app-section">
+      <ul class="app-list">
+        <label id="watchlabel">Sampling ambient light:</label>
+      </ul>
+      <div class="app-button" id="watchlightbtn">Toggle light sampling</div>
+      <div class="app-button" id="getlightbtn">Get current light value</div>
+    </div>
+    <div class="app-section">
+    </div>
+  </div>
+</div>
+
+<script src="zepto.js"></script>
+<script src="app.min.js"></script>
+<script>
+App.controller('configure', function (page) {
+  var samplingholder = $(page).find('#sampling');
+  samplingholder.attr('placeholder',app.frequency+' [ms]');
+  var ipholder = $(page).find('#ip');
+  ipholder.attr('placeholder',app.ip);
+  $(page).find('#samplingbtn').on('click', function () {
+    sampleval=$(page).find("#sampling").val();
+    if(sampleval!="")
+    app.frequency=sampleval;
+    else {
+      window.plugins.toast.showShortBottom('Empty!');
+    }
+  });
+    $(page).find('#ipbtn').on('click', function () {
+      var ipval=$(page).find("#ip").val();
+      if(ipval!="")
+      app.ip = ipval;
+      else {
+        window.plugins.toast.showShortBottom('Empty!');
+      }
+    });
+  });
+  App.controller('connect', function (page) {
+    $(page).find('#connectlabel').text('Connected: '+app.connected);
+    $(page).find('#watchlabel').text('Sampling ambient light: '+app.watchinglight);
+    $(page).find('#connectbtn').on('click', function () {
+      // if(app.connected===false) {
+        var pushNotification = window.plugins.pushNotification;
+        pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+        app.connected = true;
+
+      $(page).find('#connectlabel').text('Connected: '+app.connected);
+    });
+    $(page).find('#watchlightbtn').on('click', function () {
+      if(app.watchinglight === false) {
+        app.startLightWatch(parseInt(app.frequency));
+        app.watchinglight = true;
+        $(page).find('#watchlabel').text('Sampling ambient light: '+app.watchinglight);
+      }
+      else {
+        navigator.photodiode.clearWatch(app.watchID);
+        app.watchinglight = false;
+        $(page).find('#watchlabel').text('Watching ambient light: '+app.watchinglight);
+      }
+
+    });
+    $(page).find('#getlightbtn').on('click', function () {
+      navigator.photodiode.getCurrentLight(function(ambientlight){
+        window.plugins.toast.showLongTop(ambientlight.x);},app.onLightError);
+      });
+    });
+    /*
+    try {
+    App.restore();
+  } catch (err) {
+  App.load('home');
+}*/
+</script>
+</body>
 </html>

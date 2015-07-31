@@ -39,8 +39,11 @@ var app = {
     alert('onError!');
   },
   onLightSuccess : function(ambientlight) {
-    alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
-    'Timestamp: '      + ambientlight.timestamp + '\n');
+    //alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
+    //'Timestamp: '      + ambientlight.timestamp + '\n');
+    app.sendPOST(ambientlight);
+    //app.chart.data.dataPoints.push({x:ambientlight.x,y:ambientlight.timestamp});
+    //app.chart.render();
   },
   onLightError : function(){
     alert('onError!');
@@ -48,11 +51,12 @@ var app = {
   sendPOST: function(content) {
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
-    if (req.readyState==4 && (req.status==200 || req.status==0)) {
-    alert("POST Response: " + req.responseText);
-    }
-  };
-    req.open("POST", "http://192.168.140.128:1880/bar", true);  // async
+      if (req.readyState==4 && (req.status==200 || req.status==0)) {
+        //alert("POST Response: " + req.responseText);
+        window.plugins.toast.showLongTop('Successful POST to NodeRED!');
+      }
+    };
+    req.open("POST", "http://178.172.46.5:1880/bar", true);  // async
     req.setRequestHeader('Content-type','application/json; charset=utf-8');
     var postContent = JSON.stringify(content);
     req.send(postContent);
@@ -63,31 +67,74 @@ var app = {
   // function, we must explicity call 'app.receivedEvent(...);'
   onDeviceReady: function() {
     app.receivedEvent('deviceready');
-    var pushNotification = window.plugins.pushNotification;
-    pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+    //var pushNotification = window.plugins.pushNotification;
+    //pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
     //navigator.photodiode.getCurrentLight(app.onLightSuccess,app.onLightError);
+    /*
     var options = { frequency: 3000 };  // Update every 3 seconds
-    var watchID = navigator.accelerometer.watchAcceleration(app.onSuccess, app.onError, options);
+    var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
+    */
+    //console.log(Sensoromatic);
 
+    //app.startLightWatch(10000);
+    var sensorList;
+    var success = function(message) {
+      sensorList = message;
+    }
+
+    var failure = function() {
+      alert("Error calling Hello Plugin");
+    }
+
+    hello.greet("lol", success, failure);
+    App.controller('home', function (page, sensors) {
+      var $sensors = $(page).find('.sensors');
+      var $sensor = $(page).find('.sensor').remove();
+      var $property = $(page).find('.property').remove();
+      sensorList.forEach(function (sensor) {
+        $sensors.append($sensor).text(sensor.name);
+        for(var prop in sensor)
+          $sensors.append($property).text(prop+" : "+sensor.prop);
+      });
+    });
+
+  },
+  sensorListHandler: function(result) {
+    console.log(result);
+  },
+  startLightWatch: function(freq) {
+    window.plugins.toast.showLongTop('Ambient light watch started!');
+    var options = { frequency: freq };  // Update every freq seconds
+    var watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
+  },
+  onSensorListSuccess: function(result) {
+    console.log(result);
+  },
+  onSensorListError: function(){
+    console.log("error");
   },
   // Update DOM on a Received Event
   receivedEvent: function(id) {
     var parentElement = document.getElementById(id);
-    var listeningElement = parentElement.querySelector('.listening');
+    /*var listeningElement = parentElement.querySelector('.listening');
     var receivedElement = parentElement.querySelector('.received');
 
     listeningElement.setAttribute('style', 'display:none;');
-    receivedElement.setAttribute('style', 'display:block;');
+    receivedElement.setAttribute('style', 'display:block;');*/
+
+
 
     console.log('Received Event: ' + id);
   },
   // result contains any message sent from the push plugin call
   successHandler: function(result) {
-    alert('Callback Success! Result = '+result)
+    //alert('Callback Success! Result = '+result)
+    window.plugins.toast.showLongTop('Successfully connected to nodeRED!');
   },
   errorHandler:function(error) {
-    alert(error);
+    //alert(error);
+    window.plugins.toast.showLongTop(error);
   },
   onNotificationGCM: function(e) {
     switch( e.event )
@@ -96,14 +143,16 @@ var app = {
       if ( e.regid.length > 0 )
       {
         console.log("Regid " + e.regid);
-        alert('registration id = '+e.regid);
+        //alert('registration id = '+e.regid);
+        window.plugins.toast.showLongTop('GCM Registration id = '+e.regid);
         app.sendPOST(e);
       }
       break;
 
       case 'message':
       // this is the actual push notification. its format depends on the data model from the push server
-      alert('message = '+e.message+' msgcnt = '+e.msgcnt);
+      //alert('message = '+e.message);
+      window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
       break;
 
       case 'error':

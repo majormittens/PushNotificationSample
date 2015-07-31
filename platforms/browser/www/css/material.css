@@ -1,0 +1,52 @@
+body {
+  background-color: #CFD8DC;
+  /*Material: "Blue Grey"*/
+  /*
+  background-color:#E4E4E4;
+  background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+  background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+  background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+  background-image:-webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #A7A7A7),
+      color-stop(0.51, #E4E4E4)
+  );*/
+  background-attachment:fixed;
+  height:100%;
+  margin:0px;
+  padding:0px;
+  width:100%;
+}
+
+h3 {
+  display: block;
+  margin: auto;
+  margin-top: 5%;
+  padding-top: 15px;
+  height: 40px;
+  width: 80%;
+  background-color: #009688;
+  text-align: center;
+  box-shadow: 1px 1px 8px 1px #00695C;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+  color: white;
+  font-size: 20px;
+}
+
+span { /*"Sensing"*/
+  color: #D6FAA7;/*#94D0CC;*/ /*#F49443; orange*/
+  font-weight: 300;
+}
+
+#maincol {
+  width: 80%;
+  height: 760px;
+  background-color: white;
+  margin: auto;
+  margin-top: 1%;
+  /*border-bottom: 20px solid #366152;*/
+  box-shadow: 1px 1px 5px 1px #00695C;
+}

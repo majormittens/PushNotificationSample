@@ -45,7 +45,6 @@ public class Hello extends CordovaPlugin {
         o.put( "name",			s.getName());
         o.put( "version",		s.getVersion());
         o.put( "maxRange",		s.getMaximumRange());
-        o.put( "maxDelay",		s.getMaxDelay());
         o.put( "power",			s.getPower());
         o.put( "resolution",	s.getResolution());
 
