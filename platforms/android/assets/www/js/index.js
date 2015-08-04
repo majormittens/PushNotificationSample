@@ -43,10 +43,20 @@ var app = {
     //'Timestamp: '      + ambientlight.timestamp + '\n');
     if(app.connected === true)
       app.sendPOST(ambientlight);
-    window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
-    'Timestamp: '      + ambientlight.timestamp + '\n');
-    //app.chart.data.dataPoints.push({x:ambientlight.x,y:ambientlight.timestamp});
-    //app.chart.render();
+    /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
+    'Timestamp: '      + ambientlight.timestamp);*/
+    app.light_data.push(ambientlight);
+    MG.data_graphic({
+    title: 'Light Values',
+    description: 'Ambient light values.',
+    data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
+    width: 500,
+    height: 250,
+    target: '#plotarea', // the html element that the graphic is inserted in
+    x_accessor: 'timestamp',  // the key that accesses the x value
+    y_accessor: 'x', // the key that accesses the y value
+    show_tooltips: false
+})
   },
   onLightError : function(){
     alert('onError!');
@@ -74,6 +84,7 @@ var app = {
   connected: false,
   watchinglight:false,
   watchID: "",
+  light_data: [],
   // deviceready Event Handler
   //
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -84,9 +95,11 @@ var app = {
     //app.startLightWatch(10000);
     // var pushNotification = window.plugins.pushNotification;
     // pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+    App.load('home');
     var success = function(message) {
       app.sensorList = message;
-      App.controller('home', function (page,sensorList) {
+      App.controller('sensors', function (page,sensorList) {
+        this.transition = 'rotate-right';
         var sensors = $(page).find('.app-list');
         for(var item in app.sensorList) {
           sensors.append("<label>"+app.sensorList[item].name+"</label>");
@@ -95,7 +108,7 @@ var app = {
           sensors.append('<li>'+prop+' : '+app.sensorList[item][prop]+'</li>');
         }
       });
-      App.load('home',app.sensorList);
+      //App.load('home',app.sensorList);
     }
 
     var failure = function() {
@@ -117,7 +130,7 @@ var app = {
   // result contains any message sent from the push plugin call
   successHandler: function(result) {
     //alert('Callback Success! Result = '+result)
-    window.plugins.toast.showLongTop('Message from nodeRED: '+result);
+    console.log('Message from nodeRED: '+result);
   },
   errorHandler:function(error) {
     //alert(error);
@@ -139,8 +152,12 @@ var app = {
       case 'message':
       // this is the actual push notification. its format depends on the data model from the push server
       //alert('message = '+e.message);
-      if(e.message.length>2)
-      window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
+      //window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
+      App.dialog({
+        title        : 'Notification from nodeRED',
+        text         : e.message,
+        okButton     : 'Got it!'
+      });
       break;
 
       case 'error':

@@ -20,6 +20,45 @@
     display: flex; /*ensures the page title is centered*/
   }
 
+  .card-container {
+    margin-top: 4%;
+    margin-right: -5%;
+    margin-left: 4.5%;
+  }
+
+  .card {
+    display: inline-block;
+    width: 45%;
+    padding-top: 29%;
+    padding-bottom: 28%;
+    font-size: 150%;
+  }
+  #configuration {
+    background-color: #F69158;
+    color: white;
+    font-family: sans-serif;
+    box-shadow: 1px 1px 4px 1px #ED5851;
+  }
+
+  #sensors {
+    background-color: #8E91D1;
+    color:white;
+    box-shadow: 1px 1px 4px 1px #8E91D1;
+  }
+  #graphs {
+    background-color: #7ECFED;
+    color: white;
+    box-shadow: 1px 1px 4px 1px #8E91D1;
+  }
+  #exit {
+    background-color: #ED5851;
+    color: white;
+    box-shadow: 1px 1px 4px 1px #F69158;
+  }
+
+  img {
+    width: 110px;
+  }
   </style>
 </head>
 
@@ -27,6 +66,8 @@
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
 <script type="text/javascript" src="PushNotification.js"></script>
+<script type="text/javascript" src="js/d3.min.js"></script>
+<script type="text/javascript" src="js/metricsgraphics.min.js"></script>
 <script type="text/javascript">
 app.initialize();
 </script>
@@ -34,74 +75,112 @@ app.initialize();
 <div class="app-page" data-page="home">
   <div class="app-topbar">
     <div class="app-title">Sensor app</div>
-    <div class="app-button left" data-target="configure">Configure</div>
-    <div class="app-button right" data-target="connect">Connect</div>
+    <div class="app-button right" data-target="connect">
+      <img src="img/connectIcon.svg"/>
+    </div>
   </div>
   <div class="app-content">
-    <div class="app-section" >
-      <ul class="app-list">
-      </ul>
+    <div class = "card-container">
+      <div class="app-button card" id="configuration" data-target="configure">Configuration</div>
+      <div class="app-button card" id="sensors" data-target="sensors">Sensors</div>
+      <div class="app-button card" id="graphs">Graphs</div>
+      <div class="app-button card" id="exit">Exit</div>
     </div>
   </div>
-</div>
 
-<div class="app-page" data-page="configure">
-  <div class="app-topbar">
-    <div class="app-button left" data-back data-autotitle></div>
-    <div class="app-title">Configure</div>
-  </div>
-  <div class="app-content">
-    <div class="app-section">
-      <input class="app-input" id="sampling" placeholder="Sampling period [ms]">
-      <div class="app-button" id="samplingbtn">Set sampling period</div>
+  <div class="app-page" data-page="configure">
+    <div class="app-topbar">
+      <div class="app-button left" data-back data-autotitle></div>
+      <div class="app-title">Configure</div>
     </div>
-    <div class="app-section">
-      <input class="app-input" id="ip" placeholder="Server IP address">
-      <div class="app-button" id="ipbtn">Set IP address</div>
+    <div class="app-content">
+      <div class="app-section">
+        <input class="app-input" id="sampling" placeholder="Sampling period [ms]">
+        <div class="app-button" id="samplingbtn">Set sampling period</div>
+      </div>
+      <div class="app-section">
+        <input class="app-input" id="ip" placeholder="Server IP address">
+        <div class="app-button" id="ipbtn">Set IP address</div>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="app-page" data-page="connect">
-  <div class="app-topbar">
-    <div class="app-button left" data-back data-autotitle></div>
-    <div class="app-title">Connect to nodeRED</div>
-  </div>
-  <div class="app-content">
-    <div class="app-section">
-      <ul class="app-list">
-        <label id="connectlabel">Connected:</label>
-      </ul>
-      <div class="app-button" id="connectbtn">Connect</div>
+  <div class="app-page" data-page="sensors">
+    <div class="app-topbar">
+      <div class="app-button left" data-back data-autotitle></div>
+      <div class="app-title">Sensors</div>
     </div>
-    <div class="app-section">
-      <ul class="app-list">
-        <label id="watchlabel">Sampling ambient light:</label>
-      </ul>
-      <div class="app-button" id="watchlightbtn">Toggle light sampling</div>
-      <div class="app-button" id="getlightbtn">Get current light value</div>
-    </div>
-    <div class="app-section">
+    <div class="app-content">
+      <div class="app-section" >
+        <ul class="app-list">
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="zepto.js"></script>
-<script src="app.min.js"></script>
-<script>
-App.controller('configure', function (page) {
-  var samplingholder = $(page).find('#sampling');
-  samplingholder.attr('placeholder',app.frequency+' [ms]');
-  var ipholder = $(page).find('#ip');
-  ipholder.attr('placeholder',app.ip);
-  $(page).find('#samplingbtn').on('click', function () {
-    sampleval=$(page).find("#sampling").val();
-    if(sampleval!="")
-    app.frequency=sampleval;
-    else {
-      window.plugins.toast.showShortBottom('Empty!');
-    }
+  <div class="app-page" data-page="connect">
+    <div class="app-topbar">
+      <div class="app-button left" data-back data-autotitle></div>
+      <div class="app-title">Connect to nodeRED</div>
+    </div>
+    <div class="app-content">
+      <div class="app-section">
+        <ul class="app-list">
+          <label id="connectlabel">Connected:</label>
+        </ul>
+        <div class="app-button" id="connectbtn">Connect</div>
+      </div>
+      <div class="app-section">
+        <ul class="app-list">
+          <label id="watchlabel">Sampling ambient light:</label>
+        </ul>
+        <div class="app-button" id="watchlightbtn">Toggle light sampling</div>
+        <div class="app-button" id="getlightbtn">Get current light value</div>
+      </div>
+      <div class="app-section" id="plotarea">
+      </div>
+    </div>
+  </div>
+
+  <script src="zepto.js"></script>
+  <script src="app.min.js"></script>
+  <script>
+  //App.setDefaultTransition('fade');
+  App.controller('home', function (page) {
+    $(page).find('#graphs').on('click', function () {
+      App.dialog({
+        title        : 'Not implemented',
+        text         : 'This feature is coming soon!',
+        okButton     : 'Got it!'
+      });
+    });
+    $(page).find('#exit').on('click', function () {
+      App.dialog({
+        title        : 'Quit',
+        text         : 'Are you sure you want to exit?',
+        cancelButton : 'Cancel',
+        okButton     : 'Exit'
+      }, function (Exit) {
+        if (Exit) {
+          navigator.app.exitApp();
+        }
+      });
+    });
   });
+  App.controller('configure', function (page) {
+    this.transition = 'rotate-left';
+    var samplingholder = $(page).find('#sampling');
+    samplingholder.attr('placeholder',app.frequency+' [ms]');
+    var ipholder = $(page).find('#ip');
+    ipholder.attr('placeholder',app.ip);
+    $(page).find('#samplingbtn').on('click', function () {
+      sampleval=$(page).find("#sampling").val();
+      if(sampleval!="")
+      app.frequency=sampleval;
+      else {
+        window.plugins.toast.showShortBottom('Empty!');
+      }
+    });
     $(page).find('#ipbtn').on('click', function () {
       var ipval=$(page).find("#ip").val();
       if(ipval!="")
@@ -112,13 +191,14 @@ App.controller('configure', function (page) {
     });
   });
   App.controller('connect', function (page) {
+    this.transition = 'slide-down';
     $(page).find('#connectlabel').text('Connected: '+app.connected);
     $(page).find('#watchlabel').text('Sampling ambient light: '+app.watchinglight);
     $(page).find('#connectbtn').on('click', function () {
       // if(app.connected===false) {
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
-        app.connected = true;
+      var pushNotification = window.plugins.pushNotification;
+      pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+      app.connected = true;
 
       $(page).find('#connectlabel').text('Connected: '+app.connected);
     });
