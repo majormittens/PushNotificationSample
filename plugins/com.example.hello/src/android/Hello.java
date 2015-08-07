@@ -41,11 +41,11 @@ public class Hello extends CordovaPlugin {
       JSONObject o = new JSONObject();
 
       try {
-        o.put( "vendor",		s.getVendor());
+        //o.put( "vendor",		s.getVendor());
         o.put( "name",			s.getName());
-        o.put( "version",		s.getVersion());
+        //o.put( "version",		s.getVersion());
         o.put( "maxRange",		s.getMaximumRange());
-        o.put( "power",			s.getPower());
+        //o.put( "power",			s.getPower());
         o.put( "resolution",	s.getResolution());
 
         rtnJSON.put(o);

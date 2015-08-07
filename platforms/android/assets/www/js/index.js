@@ -73,14 +73,15 @@ var app = {
 
       }
     };
-    req.open("POST", "http://"+app.ip+":1880/bar", true);  // async
+    // req.open("POST", "http://"+app.ip+":1880/test", true);  // async
+    req.open("POST", app.ip, true);
     req.setRequestHeader('Content-type','application/json; charset=utf-8');
     var postContent = JSON.stringify(content);
     req.send(postContent);
   },
   sensorList: "", /*JSONArray of sensor JSON data*/
   frequency: "10000", /*sampling frequency; by default: 10 seconds*/
-  ip: "178.172.46.5",
+  ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
   connected: false,
   watchinglight:false,
   watchID: "",
@@ -102,7 +103,9 @@ var app = {
         this.transition = 'rotate-right';
         var sensors = $(page).find('.app-list');
         for(var item in app.sensorList) {
-          sensors.append("<label>"+app.sensorList[item].name+"</label>");
+          //sensors.append("<label>"+app.sensorList[item].name+"</label>");
+          var CHECKBOXHTML = "<input type="+'checkbox'+" name="+'sensorname'+" value="+app.sensorList[item].name+">";
+          sensors.append("<label>"+app.sensorList[item].name+CHECKBOXHTML+"</label>");
           for(var prop in app.sensorList[item])
           if(prop!="name")
           sensors.append('<li>'+prop+' : '+app.sensorList[item][prop]+'</li>');
