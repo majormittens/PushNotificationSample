@@ -42,11 +42,12 @@ public class Hello extends CordovaPlugin {
 
       try {
         //o.put( "vendor",		s.getVendor());
-        o.put( "name",			s.getName());
+        o.put( "name",			  s.getName());
         //o.put( "version",		s.getVersion());
         o.put( "maxRange",		s.getMaximumRange());
         //o.put( "power",			s.getPower());
         o.put( "resolution",	s.getResolution());
+        o.put( "type",        s.getType());
 
         rtnJSON.put(o);
       } catch (JSONException e) {

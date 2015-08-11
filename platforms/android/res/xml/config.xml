@@ -20,6 +20,9 @@
     <feature name="Hello">
         <param name="android-package" value="com.example.plugin.Hello" />
     </feature>
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
     <allow-intent href="market:*" />
     <name>PushNotificationApp</name>
     <description>

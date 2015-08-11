@@ -16,6 +16,9 @@
 * specific language governing permissions and limitations
 * under the License.
 */
+//global constants
+var TYPE_ACCELEROMETER = "1";
+var TYPE_LIGHT = "5";
 var app = {
   // Application Constructor
   initialize: function() {
@@ -42,21 +45,21 @@ var app = {
     //alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
     //'Timestamp: '      + ambientlight.timestamp + '\n');
     if(app.connected === true)
-      app.sendPOST(ambientlight);
+    app.sendPOST(ambientlight);
     /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
     'Timestamp: '      + ambientlight.timestamp);*/
     app.light_data.push(ambientlight);
     MG.data_graphic({
-    title: 'Light Values',
-    description: 'Ambient light values.',
-    data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
-    width: 500,
-    height: 250,
-    target: '#plotarea', // the html element that the graphic is inserted in
-    x_accessor: 'timestamp',  // the key that accesses the x value
-    y_accessor: 'x', // the key that accesses the y value
-    show_tooltips: false
-})
+      title: 'Light Values',
+      description: 'Ambient light values.',
+      data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
+      width: 500,
+      height: 250,
+      target: '#plotarea', // the html element that the graphic is inserted in
+      x_accessor: 'timestamp',  // the key that accesses the x value
+      y_accessor: 'x', // the key that accesses the y value
+      show_tooltips: false
+    })
   },
   onLightError : function(){
     alert('onError!');
@@ -79,13 +82,16 @@ var app = {
     var postContent = JSON.stringify(content);
     req.send(postContent);
   },
+  //Options:
   sensorList: "", /*JSONArray of sensor JSON data*/
   frequency: "10000", /*sampling frequency; by default: 10 seconds*/
   ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
   connected: false,
-  watchinglight:false,
+  watching:false,
   watchID: "",
   light_data: [],
+  sensorsToWatch: [],
+  implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT],
   // deviceready Event Handler
   //
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -97,21 +103,39 @@ var app = {
     // var pushNotification = window.plugins.pushNotification;
     // pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     App.load('home');
+    if(navigator.connection.type == 'none')
+    window.plugins.toast.showLongTop('No network connection enabled!');
     var success = function(message) {
       app.sensorList = message;
       App.controller('sensors', function (page,sensorList) {
         this.transition = 'rotate-right';
+
         var sensors = $(page).find('.app-list');
         for(var item in app.sensorList) {
-          //sensors.append("<label>"+app.sensorList[item].name+"</label>");
-          var CHECKBOXHTML = "<input type="+'checkbox'+" name="+'sensorname'+" value="+app.sensorList[item].name+">";
-          sensors.append("<label>"+app.sensorList[item].name+CHECKBOXHTML+"</label>");
+          var checked = '';
+          if(app.sensorsToWatch.indexOf(app.sensorList[item].type+"")>-1)
+          checked = 'checked';
+          var CHECKBOXHTML = "<input type='checkbox' id='sensorbox' "+checked+" name="+app.sensorList[item].type+">";
+          sensors.append("<label><div id='sensorname'>"+app.sensorList[item].name+"</div>"+CHECKBOXHTML+"</label>");
           for(var prop in app.sensorList[item])
           if(prop!="name")
           sensors.append('<li>'+prop+' : '+app.sensorList[item][prop]+'</li>');
         }
+
+        $(page).find('#applybtn').on('click', function () {
+          var checkboxes = $(page).find('#sensorbox');
+          for(var box in checkboxes) {
+            console.log(checkboxes[box]);
+            if(checkboxes[box].checked == true && app.sensorsToWatch.indexOf(checkboxes[box].name)<0)
+            app.sensorsToWatch.push(checkboxes[box].name);
+            else
+            if(checkboxes[box].checked == false && app.sensorsToWatch.indexOf(checkboxes[box].name)>=0)
+            app.sensorsToWatch.splice(app.sensorsToWatch.indexOf(checkboxes[box].name),1);
+          }
+          console.log(app.sensorsToWatch);
+        });
       });
-      //App.load('home',app.sensorList);
+
     }
 
     var failure = function() {
@@ -157,9 +181,9 @@ var app = {
       //alert('message = '+e.message);
       //window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
       App.dialog({
-        title        : 'Notification from nodeRED',
+        title        : e.title,
         text         : e.message,
-        okButton     : 'Got it!'
+        okButton     : 'Ok'
       });
       break;
 

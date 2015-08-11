@@ -31,6 +31,10 @@
                         {
                             "xml": "<feature name=\"Hello\"><param name=\"android-package\" value=\"com.example.plugin.Hello\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"android-package\" value=\"org.apache.cordova.networkinformation.NetworkManager\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -81,7 +85,12 @@
                             "count": 1
                         }
                     ],
-                    "/*": []
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+                            "count": 1
+                        }
+                    ]
                 }
             }
         }
@@ -100,6 +109,9 @@
             "PACKAGE_NAME": "com.pushapp"
         },
         "com.example.hello": {
+            "PACKAGE_NAME": "com.pushapp"
+        },
+        "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.pushapp"
         }
     },

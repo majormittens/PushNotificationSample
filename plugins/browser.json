@@ -21,6 +21,9 @@
         },
         "com.example.hello": {
             "PACKAGE_NAME": "com.pushapp"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "io.cordova.hellocordova"
         }
     },
     "dependent_plugins": {}
