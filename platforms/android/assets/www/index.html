@@ -121,6 +121,16 @@
     font-size: 16px;
     float: left;
   }
+
+/*Larger fonts in teal buttons*/
+  .app-button.teal {
+    font-size: 20px;
+  }
+
+/*Various label font size adjustments*/
+  #rangelabel, #watchlabel, #connectlabel {
+    font-size: 16px;
+  }
   </style>
 </head>
 
@@ -143,10 +153,22 @@ app.initialize();
   </div>
   <div class="app-content">
     <div class = "card-container">
-      <div class="app-button card" id="configuration" data-target="configure">Configuration</div>
-      <div class="app-button card" id="sensors" data-target="sensors">Sensors</div>
-      <div class="app-button card" id="graphs">Graphs</div>
-      <div class="app-button card" id="exit">Exit</div>
+      <div class="app-button card" id="configuration" data-target="configure">
+        <img src="img/configIcon.svg" id="cardIcon"/>
+        <div class="cardTxt">Configuration</div>
+      </div>
+      <div class="app-button card" id="sensors" data-target="sensors">
+        <img src="img/sensorsIcon.svg" class="cardIcon"/>
+        <div class="cardTxt">Sensors</div>
+      </div>
+      <div class="app-button card" id="graphs">
+        <img src="img/graphIcon.svg" class="cardIcon"/>
+        <div class="cardTxt">Graphs</div>
+      </div>
+      <div class="app-button card" id="exit">
+        <img src="img/exitIcon.svg" class="cardIcon"/>
+        <div class="cardTxt">Exit</div>
+      </div>
     </div>
   </div>
 
@@ -159,11 +181,11 @@ app.initialize();
       <div class="app-section">
         <ul class="app-list"><label id="rangelabel"></label></ul>
         <input type="range" id="samplingrange" name="period" min="500" max="10000" step="10">
-        <div class="app-button" id="samplingbtn">Set sampling period</div>
+        <div class="app-button teal" id="samplingbtn">Set sampling period</div>
       </div>
       <div class="app-section">
         <input class="app-input" id="ip" placeholder="Server IP address">
-        <div class="app-button" id="ipbtn">Set IP address / hostname</div>
+        <div class="app-button teal" id="ipbtn">Set IP address / hostname</div>
       </div>
     </div>
   </div>
@@ -192,13 +214,13 @@ app.initialize();
         <ul class="app-list">
           <label id="connectlabel">Synced:</label>
         </ul>
-        <div class="app-button" id="connectbtn">Sync Registration ID</div>
+        <div class="app-button teal" id="connectbtn">Sync Registration ID</div>
       </div>
       <div class="app-section">
         <ul class="app-list">
           <label id="watchlabel">Sampling:</label>
         </ul>
-        <div class="app-button" id="watchbtn">Toggle sensor sampling</div>
+        <div class="app-button teal" id="watchbtn">Toggle sensor sampling</div>
       </div>
       <div class="app-section" id="plotarea">
       </div>
@@ -268,7 +290,7 @@ app.initialize();
     $(page).find('#watchlabel').text('Sampling: '+app.watching);
     $(page).find('#connectbtn').on('click', function () {
       var pushNotification = window.plugins.pushNotification;
-      pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+      pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
       app.Synced = true;
 
       $(page).find('#connectlabel').text('Synced: '+app.connected);
@@ -276,12 +298,18 @@ app.initialize();
     $(page).find('#watchbtn').on('click', function () {
       //Here be dragons
       if(app.watching === false) {
+        if(app.sensorsToWatch.indexOf(TYPE_LIGHT)>-1)
         app.startLightWatch(parseInt(app.frequency));
+        if(app.sensorsToWatch.indexOf(TYPE_ACCELEROMETER)>-1)
+        app.startAccelWatch(parseInt(app.frequency));
+
         app.watching = true;
         $(page).find('#watchlabel').text('Sampling: '+app.watching);
       }
       else {
-        navigator.photodiode.clearWatch(app.watchID);
+        navigator.photodiode.clearWatch(app.watchIDs.watchLightID);
+        navigator.accelerometer.clearWatch(app.watchIDs.watchAccelID);
+
         app.watching = false;
         $(page).find('#watchlabel').text('Sampling: '+app.watching);
       }

@@ -94,25 +94,6 @@ function removeListeners(l) {
 //       }, "Photodiode", "getall", []);
 // }
 var photodiode = {
-    getall: function(successCallback,errorCallback) {
-            exec(function (a) {
-                sensorList = new JSONArray();
-                sensorList = a;
-                successCallback(sensorList);
-            }, function (e) {
-              errorCallback(e);
-            }, "Photodiode", "getall", []);
-    },
-    meaning: function(successCallback,errorCallback) {
-            exec(function (a) {
-                // sensorList = new JSONArray();
-                // sensorList = a;
-                // successCallback(sensorList);
-                successCallback(a);
-            }, function (e) {
-              errorCallback(e);
-            }, "Photodiode", "meaningoflife", []);
-    },
     /**
      * Asynchronously acquires the current acceleration.
      *

@@ -19,6 +19,8 @@
 //global constants
 var TYPE_ACCELEROMETER = "1";
 var TYPE_LIGHT = "5";
+var TYPE_PROXIMITY = "8";
+
 var app = {
   // Application Constructor
   initialize: function() {
@@ -31,19 +33,7 @@ var app = {
   bindEvents: function() {
     document.addEventListener('deviceready', this.onDeviceReady, false);
   },
-  onSuccess : function(acceleration) {
-    alert('Acceleration X: ' + acceleration.x + '\n' +
-    'Acceleration Y: ' + acceleration.y + '\n' +
-    'Acceleration Z: ' + acceleration.z + '\n' +
-    'Timestamp: '      + acceleration.timestamp + '\n');
-    app.sendPOST(acceleration);
-  },
-  onError : function(){
-    alert('onError!');
-  },
   onLightSuccess : function(ambientlight) {
-    //alert('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
-    //'Timestamp: '      + ambientlight.timestamp + '\n');
     if(app.connected === true)
     app.sendPOST(ambientlight);
     /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
@@ -61,22 +51,36 @@ var app = {
       show_tooltips: false
     })
   },
-  onLightError : function(){
-    alert('onError!');
+  onAccelSuccess : function(accelerations) {
+    console.log("Accel success handler!");
+    if(app.connected === true)
+    app.sendPOST(accelerations);
+    window.plugins.toast.showShortTop('Accels: ' + accelerations.x + '\n' +
+    + accelerations.y + '\n' + accelerations.z + '\n' +
+    'Timestamp: '      + accelerations.timestamp);
+    //app.accel_data.push(accelerations);
+    // MG.data_graphic({
+    //   title: 'Accelerations',
+    //   description: 'Ambient light values.',
+    //   data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
+    //   width: 500,
+    //   height: 250,
+    //   target: '#plotarea', // the html element that the graphic is inserted in
+    //   x_accessor: 'timestamp',  // the key that accesses the x value
+    //   y_accessor: 'x', // the key that accesses the y value
+    //   show_tooltips: false
+    // });
   },
   sendPOST: function(content) {
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
       if (req.readyState==4 && (req.status==200 || req.status==0)) {
-        //alert("POST Response: " + req.responseText);
-        //window.plugins.toast.showShortTop('POST to NodeRED!');
         if(app.connected === false) {
           app.connected = true;
         }
 
       }
     };
-    // req.open("POST", "http://"+app.ip+":1880/test", true);  // async
     req.open("POST", app.ip, true);
     req.setRequestHeader('Content-type','application/json; charset=utf-8');
     var postContent = JSON.stringify(content);
@@ -88,20 +92,17 @@ var app = {
   ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
   connected: false,
   watching:false,
-  watchID: "",
+  watchIDs: {watchLightID : "", watchAccelID: "", watchProximID: ""}, //remember all started watchIDs
   light_data: [],
+  accel_data: [],
   sensorsToWatch: [],
-  implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT],
+  implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT, TYPE_PROXIMITY],
   // deviceready Event Handler
   //
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
   // function, we must explicity call 'app.receivedEvent(...);'
   onDeviceReady: function() {
     console.log("device ready");
-    //navigator.accelerometer.getCurrentAcceleration(app.onSuccess, app.onError);
-    //app.startLightWatch(10000);
-    // var pushNotification = window.plugins.pushNotification;
-    // pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
     App.load('home');
     if(navigator.connection.type == 'none')
     window.plugins.toast.showLongTop('No network connection enabled!');
@@ -109,13 +110,16 @@ var app = {
       app.sensorList = message;
       App.controller('sensors', function (page,sensorList) {
         this.transition = 'rotate-right';
-
         var sensors = $(page).find('.app-list');
         for(var item in app.sensorList) {
           var checked = '';
+          //Is the sensor selected?
           if(app.sensorsToWatch.indexOf(app.sensorList[item].type+"")>-1)
           checked = 'checked';
           var CHECKBOXHTML = "<input type='checkbox' id='sensorbox' "+checked+" name="+app.sensorList[item].type+">";
+          //is the sensor implemented?
+          if(app.implementedSensors.indexOf(app.sensorList[item].type+"")<0)
+          CHECKBOXHTML = '';
           sensors.append("<label><div id='sensorname'>"+app.sensorList[item].name+"</div>"+CHECKBOXHTML+"</label>");
           for(var prop in app.sensorList[item])
           if(prop!="name")
@@ -125,7 +129,6 @@ var app = {
         $(page).find('#applybtn').on('click', function () {
           var checkboxes = $(page).find('#sensorbox');
           for(var box in checkboxes) {
-            console.log(checkboxes[box]);
             if(checkboxes[box].checked == true && app.sensorsToWatch.indexOf(checkboxes[box].name)<0)
             app.sensorsToWatch.push(checkboxes[box].name);
             else
@@ -137,30 +140,21 @@ var app = {
       });
 
     }
-
-    var failure = function() {
-      alert("Error calling Hello Plugin");
-    }
-    hello.greet("lol", success, failure);
+    hello.greet("lol", success, app.genericErrorHandler);
   },
-  startLightWatch: function(freq) {
-    window.plugins.toast.showLongTop('Ambient light watch started!');
-    var options = { frequency: freq };  // Update every freq seconds
-    app.watchID = navigator.photodiode.watchLight(app.onLightSuccess, app.onLightError, options);
+  startLightWatch: function(t) {
+    var options = { frequency: t };  // Update every t seconds
+    app.watchIDs.watchLightID = navigator.photodiode.watchLight(app.onLightSuccess, app.genericErrorHandler, options);
   },
-  onSensorListSuccess: function(result) {
+  startAccelWatch: function(t) {
+    console.log("started accel watch");
+    var options = { frequency: t };  // Update every t seconds
+    app.watchIDs.watchAccelID = navigator.accelerometer.watchAcceleration(app.onAccelSuccess, app.genericErrorHandler, options);
+  },
+  genericSuccessHandler: function(result) {
     console.log(result);
   },
-  onSensorListError: function(){
-    console.log("error");
-  },
-  // result contains any message sent from the push plugin call
-  successHandler: function(result) {
-    //alert('Callback Success! Result = '+result)
-    console.log('Message from nodeRED: '+result);
-  },
-  errorHandler:function(error) {
-    //alert(error);
+  genericErrorHandler:function(error) {
     window.plugins.toast.showLongTop(error);
   },
   onNotificationGCM: function(e) {
@@ -178,8 +172,6 @@ var app = {
 
       case 'message':
       // this is the actual push notification. its format depends on the data model from the push server
-      //alert('message = '+e.message);
-      //window.plugins.toast.showLongTop('Notification message from nodeRED: '+e.message);
       App.dialog({
         title        : e.title,
         text         : e.message,

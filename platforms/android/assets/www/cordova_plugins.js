@@ -72,6 +72,34 @@ module.exports = [
         "clobbers": [
             "Connection"
         ]
+    },
+    {
+        "file": "plugins/org.awokenwell.proximity/www/proximity.js",
+        "id": "org.awokenwell.proximity.proximity",
+        "clobbers": [
+            "navigator.proximity"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device-orientation/www/CompassError.js",
+        "id": "cordova-plugin-device-orientation.CompassError",
+        "clobbers": [
+            "CompassError"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device-orientation/www/CompassHeading.js",
+        "id": "cordova-plugin-device-orientation.CompassHeading",
+        "clobbers": [
+            "CompassHeading"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device-orientation/www/compass.js",
+        "id": "cordova-plugin-device-orientation.compass",
+        "clobbers": [
+            "navigator.compass"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -82,7 +110,9 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.0.0",
     "nl.x-services.plugins.toast": "2.0.4",
     "com.example.hello": "0.7.0",
-    "cordova-plugin-network-information": "1.0.2-dev"
+    "cordova-plugin-network-information": "1.0.2-dev",
+    "org.awokenwell.proximity": "0.2.1",
+    "cordova-plugin-device-orientation": "1.0.1"
 }
 // BOTTOM OF METADATA
 });
