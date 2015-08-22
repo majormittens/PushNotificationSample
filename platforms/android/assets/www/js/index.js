@@ -21,7 +21,7 @@ var TYPE_ACCELEROMETER = "1";
 var TYPE_LIGHT = "5";
 var TYPE_PROXIMITY = "8";
 
-var app = {
+var app = { //=/= App, an object of the App.js framework
   // Application Constructor
   initialize: function() {
     this.bindEvents();
@@ -49,7 +49,7 @@ var app = {
       x_accessor: 'timestamp',  // the key that accesses the x value
       y_accessor: 'x', // the key that accesses the y value
       show_tooltips: false
-    })
+    });
   },
   onAccelSuccess : function(accelerations) {
     console.log("Accel success handler!");
@@ -58,18 +58,18 @@ var app = {
     window.plugins.toast.showShortTop('Accels: ' + accelerations.x + '\n' +
     + accelerations.y + '\n' + accelerations.z + '\n' +
     'Timestamp: '      + accelerations.timestamp);
-    //app.accel_data.push(accelerations);
-    // MG.data_graphic({
-    //   title: 'Accelerations',
-    //   description: 'Ambient light values.',
-    //   data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
-    //   width: 500,
-    //   height: 250,
-    //   target: '#plotarea', // the html element that the graphic is inserted in
-    //   x_accessor: 'timestamp',  // the key that accesses the x value
-    //   y_accessor: 'x', // the key that accesses the y value
-    //   show_tooltips: false
-    // });
+    app.accel_data.push(accelerations);
+    MG.data_graphic({
+      title: 'Accelerations',
+      description: 'X Acceleration values.',
+      data: app.accel_data, // an array of objects, such as [{value:100,date:...},...]
+      width: 250,
+      height: 250,
+      target: '#'+TYPE_ACCELEROMETER, // the html element that the graphic is inserted in
+      x_accessor: 'timestamp',  // the key that accesses the x value
+      y_accessor: 'x', // the key that accesses the y value
+      show_tooltips: false
+    });
   },
   sendPOST: function(content) {
     var req = new XMLHttpRequest();
@@ -90,8 +90,8 @@ var app = {
   sensorList: "", /*JSONArray of sensor JSON data*/
   frequency: "10000", /*sampling frequency; by default: 10 seconds*/
   ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
-  connected: false,
-  watching:false,
+  connected: true,
+  watching: false,
   watchIDs: {watchLightID : "", watchAccelID: "", watchProximID: ""}, //remember all started watchIDs
   light_data: [],
   accel_data: [],

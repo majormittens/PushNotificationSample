@@ -1,0 +1,22 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-device-motion": {},
+        "cordova-plugin-whitelist": {},
+        "cordova-plugin-network-information": {},
+        "org.awokenwell.proximity": {},
+        "cordova-plugin-device-orientation": {},
+        "org.apache.cordova.device": {},
+        "org.apache.cordova.splashscreen": {},
+        "com.example.hello": {},
+        "com.phonegap.plugins.PushPlugin": {},
+        "nl.x-services.plugins.toast": {}
+    },
+    "dependent_plugins": {}
+}

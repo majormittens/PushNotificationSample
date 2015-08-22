@@ -135,7 +135,9 @@
         },
         "cordova-plugin-device-orientation": {
             "PACKAGE_NAME": "com.pushapp"
-        }
+        },
+        "org.apache.cordova.device": {},
+        "org.apache.cordova.splashscreen": {}
     },
     "dependent_plugins": {}
 }

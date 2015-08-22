@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My App</title>
+  <title>SensorPush</title>
   <meta charset="utf-8" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
@@ -73,13 +73,11 @@
   .app-dialog {
     -webkit-transform: translate3d(0px,0px,0px);
     transform: scale(.1,.1);
-    opacity: 0.2
   }
 
   .app-android-5 .app-dialog-container.enabled .app-dialog {
     -webkit-transform: translate3d(0px,0px,0px);
     transition: transform .6s linear;
-    opacity: 1;
   }
 
   /*Fancy flash effect on tap */
@@ -105,6 +103,11 @@
   .shadow {
     -webkit-filter: drop-shadow( -5px -5px 5px #00665B );
     filter: drop-shadow( -5px -5px 5px #00665B ); /* Same syntax as box-shadow */
+
+    width: 325%;
+    position: absolute;
+    right: 10%;
+    top: 5%;
   }
 
   label {
@@ -122,214 +125,208 @@
     float: left;
   }
 
-/*Larger fonts in teal buttons*/
+  /*Larger fonts in teal buttons*/
   .app-button.teal {
     font-size: 20px;
   }
 
-/*Various label font size adjustments*/
-  #rangelabel, #watchlabel, #connectlabel {
+  /*Various label font size adjustments*/
+  #rangelabel, #connectlabel {
     font-size: 16px;
   }
+
   </style>
 </head>
 
 <body>
-<script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
-<script type="text/javascript" src="PushNotification.js"></script>
-<script type="text/javascript" src="js/d3.min.js"></script>
-<script type="text/javascript" src="js/metricsgraphics.min.js"></script>
-<script type="text/javascript">
-app.initialize();
-</script>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="PushNotification.js"></script>
+  <script type="text/javascript" src="js/d3.min.js"></script>
+  <script type="text/javascript" src="js/metricsgraphics.min.js"></script>
+  <script type="text/javascript">
+  app.initialize();
+  </script>
 
-<div class="app-page" data-page="home">
-  <div class="app-topbar">
-    <div class="app-title">Sensor app</div>
-    <div class="app-button right" data-target="connect">
-      <img src="img/connectIcon.svg" class="shadow"/>
-    </div>
-  </div>
-  <div class="app-content">
-    <div class = "card-container">
-      <div class="app-button card" id="configuration" data-target="configure">
-        <img src="img/configIcon.svg" id="cardIcon"/>
-        <div class="cardTxt">Configuration</div>
-      </div>
-      <div class="app-button card" id="sensors" data-target="sensors">
-        <img src="img/sensorsIcon.svg" class="cardIcon"/>
-        <div class="cardTxt">Sensors</div>
-      </div>
-      <div class="app-button card" id="graphs">
-        <img src="img/graphIcon.svg" class="cardIcon"/>
-        <div class="cardTxt">Graphs</div>
-      </div>
-      <div class="app-button card" id="exit">
-        <img src="img/exitIcon.svg" class="cardIcon"/>
-        <div class="cardTxt">Exit</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="app-page" data-page="configure">
+  <div class="app-page" data-page="home">
     <div class="app-topbar">
-      <div class="app-button left" data-back data-autotitle></div>
-      <div class="app-title">Configure</div>
-    </div>
-    <div class="app-content">
-      <div class="app-section">
-        <ul class="app-list"><label id="rangelabel"></label></ul>
-        <input type="range" id="samplingrange" name="period" min="500" max="10000" step="10">
-        <div class="app-button teal" id="samplingbtn">Set sampling period</div>
-      </div>
-      <div class="app-section">
-        <input class="app-input" id="ip" placeholder="Server IP address">
-        <div class="app-button teal" id="ipbtn">Set IP address / hostname</div>
+      <div class="app-title">Sensor app</div>
+      <div class="app-button right" data-target="connect">
+        <img src="img/connectIcon.svg" class="shadow"/>
       </div>
     </div>
-  </div>
+    <div class="app-content" id="testcontent">
+      <div class = "card-container">
+        <div class="app-button card" id="configuration" data-target="configure">
+          <img src="img/configIcon.svg" id="cardIcon"/>
+          <div class="cardTxt">Configuration</div>
+        </div>
+        <div class="app-button card" id="sensors" data-target="sensors">
+          <img src="img/sensorsIcon.svg" class="cardIcon"/>
+          <div class="cardTxt">Sensors</div>
+        </div>
+        <div class="app-button card" id="graphs" data-target="graphs">
+          <img src="img/graphIcon.svg" class="cardIcon"/>
+          <div class="cardTxt">Graphs</div>
+        </div>
+        <div class="app-button card" id="exit">
+          <img src="img/exitIcon.svg" class="cardIcon"/>
+          <div class="cardTxt">Exit</div>
+        </div>
+      </div>
+    </div>
 
-  <div class="app-page" data-page="sensors">
-    <div class="app-topbar">
-      <div class="app-button left" data-back data-autotitle></div>
-      <div class="app-title">Sensors</div>
-      <div class="app-button right" id="applybtn">Apply</div>
-    </div>
-    <div class="app-content">
-      <div class="app-section" >
-        <ul class="app-list">
-        </ul>
+    <div class="app-page" data-page="configure">
+      <div class="app-topbar">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Configure</div>
+      </div>
+      <div class="app-content">
+        <div class="app-section">
+          <ul class="app-list"><label id="rangelabel"></label></ul>
+          <input type="range" id="samplingrange" name="period" min="500" max="10000" step="10">
+          <div class="app-button teal" id="samplingbtn">Set sampling period</div>
+        </div>
+        <div class="app-section">
+          <input class="app-input" id="ip" placeholder="Server IP address">
+          <div class="app-button teal" id="ipbtn">Set IP address / hostname</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="app-page" data-page="connect">
-    <div class="app-topbar">
-      <div class="app-button left" data-back data-autotitle></div>
-      <div class="app-title">Connect to nodeRED</div>
-    </div>
-    <div class="app-content">
-      <div class="app-section">
-        <ul class="app-list">
-          <label id="connectlabel">Synced:</label>
-        </ul>
-        <div class="app-button teal" id="connectbtn">Sync Registration ID</div>
+    <div class="app-page" data-page="sensors">
+      <div class="app-topbar">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Sensors</div>
+        <div class="app-button right" id="applybtn">Apply</div>
       </div>
-      <div class="app-section">
-        <ul class="app-list">
-          <label id="watchlabel">Sampling:</label>
-        </ul>
-        <div class="app-button teal" id="watchbtn">Toggle sensor sampling</div>
-      </div>
-      <div class="app-section" id="plotarea">
+      <div class="app-content">
+        <div class="app-section" >
+          <ul class="app-list">
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="app-page" data-page="graphs">
-    <div class="app-topbar">
-      <div class="app-button left" data-back data-autotitle></div>
-      <div class="app-title">Graphs</div>
-      <div class="app-button right" id="clearbtn">Clear all</div>
+    <div class="app-page" data-page="connect">
+      <div class="app-topbar">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Connect to nodeRED</div>
+      </div>
+      <div class="app-content">
+        <div class="app-section">
+          <ul class="app-list">
+            <label id="connectlabel">Synced:</label>
+          </ul>
+          <div class="app-button teal" id="connectbtn">Sync Registration ID</div>
+        </div>
+        <div class="app-section">
+          <div class="app-button teal" id="watchbtn">Toggle sensor sampling</div>
+        </div>
+        <div class="app-section" id="plotarea">
+        </div>
+      </div>
     </div>
-    <div class="app-content">
-      <div class="app-section" >
+
+    <div class="app-page" data-page="graphs">
+      <div class="app-topbar">
+        <div class="app-button left" data-back data-autotitle></div>
+        <div class="app-title">Graphs</div>
+        <div class="app-button right" id="clearbtn">Clear all</div>
+      </div>
+      <div class="app-content">
 
       </div>
     </div>
-  </div>
 
-  <script src="zepto.js"></script>
-  <script src="app.min.js"></script>
-  <script>
-  App.controller('home', function (page) {
-    $(page).find('#graphs').on('tap', function () {
-      //$('#graphs').animate('flash', 500, 'ease');
-      App.dialog({
-        title        : 'Not implemented',
-        text         : 'This feature is coming soon!',
-        okButton     : 'Got it!'
+    <script src="zepto.js"></script>
+    <script src="app.min.js"></script>
+    <script>
+    App.controller('home', function (page) {
+      $(page).find('#exit').on('click', function () {
+        //$('#exit').animate('flash', 500, 'ease');
+        App.dialog({
+          title        : 'Quit',
+          text         : 'Are you sure you want to exit?',
+          cancelButton : 'Cancel',
+          okButton     : 'Exit'
+        }, function (Exit) {
+          if (Exit) {
+            navigator.app.exitApp();
+          }
+        });
       });
+      // $(page).find('#sensors').on('click', function () {
+      //   $('#sensors').animate('flash', 500, 'ease-out');
+      //   setTimeout(function(){}, 1000);
+      // });
+      // $(page).find('#configuration').on('click', function () {
+      //   $('#graphs').animate('flash', 500, 'ease-out');
+      //   setTimeout(function(){}, 1000);
+      // });
     });
-    $(page).find('#exit').on('click', function () {
-      //$('#exit').animate('flash', 500, 'ease');
-      App.dialog({
-        title        : 'Quit',
-        text         : 'Are you sure you want to exit?',
-        cancelButton : 'Cancel',
-        okButton     : 'Exit'
-      }, function (Exit) {
-        if (Exit) {
-          navigator.app.exitApp();
+    App.controller('configure', function (page) {
+      this.transition = 'rotate-left';
+      var rangelabelholder = $(page).find('#rangelabel');
+      rangelabelholder.text(app.frequency+' [ms]');
+      var samplingholder = $(page).find('#samplingrange');
+      samplingholder.value = app.frequency;
+      var ipholder = $(page).find('#ip');
+      //ipholder.attr('placeholder',app.ip);
+      ipholder.val(app.ip);
+      $(page).find('#samplingbtn').on('click', function () {
+        sampleval=samplingholder.val();
+        app.frequency=sampleval;
+        rangelabelholder.text(app.frequency+' [ms]');
+      });
+      $(page).find('#ipbtn').on('click', function () {
+        var ipval=$(page).find("#ip").val();
+        if(ipval!="")
+        app.ip = ipval;
+        else {
+          window.plugins.toast.showShortBottom('Empty!');
+        }
+      });
+        samplingholder.on('input', function () {
+            rangelabelholder.text(samplingholder.val()+' [ms]');
+        });
+    });
+    App.controller('connect', function (page) {
+      this.transition = 'slide-down';
+      $(page).find('#connectlabel').text('Synced: '+app.connected);
+      $(page).find('#watchbtn').text('Sampling: '+app.watching);
+      $(page).find('#connectbtn').on('click', function () {
+        var pushNotification = window.plugins.pushNotification;
+        pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+
+        $(page).find('#connectlabel').text('Synced: '+app.connected);
+      });
+      $(page).find('#watchbtn').on('click', function () {
+        //Here be dragons
+        if(app.watching === false) {
+          if(app.sensorsToWatch.indexOf(TYPE_LIGHT)>-1)
+          app.startLightWatch(parseInt(app.frequency));
+          if(app.sensorsToWatch.indexOf(TYPE_ACCELEROMETER)>-1)
+          app.startAccelWatch(parseInt(app.frequency));
+
+          app.watching = true;
+          $(page).find('#watchbtn').text('Sampling: '+app.watching);
+        }
+        else {
+          navigator.photodiode.clearWatch(app.watchIDs.watchLightID);
+          navigator.accelerometer.clearWatch(app.watchIDs.watchAccelID);
+
+          app.watching = false;
+          $(page).find('#watchbtn').text('Sampling: '+app.watching);
         }
       });
     });
-    // $(page).find('#sensors').on('click', function () {
-    //   $('#sensors').animate('flash', 500, 'ease-out');
-    //   setTimeout(function(){}, 1000);
-    // });
-    // $(page).find('#configuration').on('click', function () {
-    //   $('#graphs').animate('flash', 500, 'ease-out');
-    //   setTimeout(function(){}, 1000);
-    // });
-  });
-  App.controller('configure', function (page) {
-    this.transition = 'rotate-left';
-    var rangelabelholder = $(page).find('#rangelabel');
-    rangelabelholder.text(app.frequency+' [ms]');
-    var samplingholder = $(page).find('#samplingrange');
-    samplingholder.value = app.frequency;
-    var ipholder = $(page).find('#ip');
-    //ipholder.attr('placeholder',app.ip);
-    ipholder.val(app.ip);
-    $(page).find('#samplingbtn').on('click', function () {
-      sampleval=samplingholder.val();
-      app.frequency=sampleval;
-      rangelabelholder.text(app.frequency+' [ms]');
-    });
-    $(page).find('#ipbtn').on('click', function () {
-      var ipval=$(page).find("#ip").val();
-      if(ipval!="")
-      app.ip = ipval;
-      else {
-        window.plugins.toast.showShortBottom('Empty!');
-      }
-    });
-  });
-  App.controller('connect', function (page) {
-    this.transition = 'slide-down';
-    $(page).find('#connectlabel').text('Synced: '+app.connected);
-    $(page).find('#watchlabel').text('Sampling: '+app.watching);
-    $(page).find('#connectbtn').on('click', function () {
-      var pushNotification = window.plugins.pushNotification;
-      pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
-      app.Synced = true;
-
-      $(page).find('#connectlabel').text('Synced: '+app.connected);
-    });
-    $(page).find('#watchbtn').on('click', function () {
-      //Here be dragons
-      if(app.watching === false) {
-        if(app.sensorsToWatch.indexOf(TYPE_LIGHT)>-1)
-        app.startLightWatch(parseInt(app.frequency));
-        if(app.sensorsToWatch.indexOf(TYPE_ACCELEROMETER)>-1)
-        app.startAccelWatch(parseInt(app.frequency));
-
-        app.watching = true;
-        $(page).find('#watchlabel').text('Sampling: '+app.watching);
-      }
-      else {
-        navigator.photodiode.clearWatch(app.watchIDs.watchLightID);
-        navigator.accelerometer.clearWatch(app.watchIDs.watchAccelID);
-
-        app.watching = false;
-        $(page).find('#watchlabel').text('Sampling: '+app.watching);
-      }
-    });
-  });
     App.controller('graphs', function (page) {
-
+      var contentDOM = $(page).find('.page-content');
+      //Make a section for each sensor to watch for graphing
+      for(var i=0; i<app.sensorsToWatch.length; i++) {
+        contentDOM.append("<div class='app-section' id='lel"+app.sensorsToWatch[i]+"'></div>");
+      }
     });
     /*
     try {
