@@ -152,7 +152,7 @@
     <div class="app-topbar">
       <div class="app-title">Sensor app</div>
       <div class="app-button right" data-target="connect">
-        <img src="img/connectIcon.svg" class="shadow"/>
+        <img src="img/playIcon.svg" class="shadow"/>
       </div>
     </div>
     <div class="app-content" id="testcontent">
@@ -223,8 +223,6 @@
         <div class="app-section">
           <div class="app-button teal" id="watchbtn">Toggle sensor sampling</div>
         </div>
-        <div class="app-section" id="plotarea">
-        </div>
       </div>
     </div>
 
@@ -235,7 +233,7 @@
         <div class="app-button right" id="clearbtn">Clear all</div>
       </div>
       <div class="app-content">
-
+        <div class="graphscontainer"></div>
       </div>
     </div>
 
@@ -287,13 +285,13 @@
           window.plugins.toast.showShortBottom('Empty!');
         }
       });
-        samplingholder.on('input', function () {
-            rangelabelholder.text(samplingholder.val()+' [ms]');
-        });
+      samplingholder.on('input', function () {
+        rangelabelholder.text(samplingholder.val()+' [ms]');
+      });
     });
     App.controller('connect', function (page) {
       this.transition = 'slide-down';
-      $(page).find('#connectlabel').text('Synced: '+app.connected);
+      $(page).find('#connectlabel').text('Online: '+app.connected);
       $(page).find('#watchbtn').text('Sampling: '+app.watching);
       $(page).find('#connectbtn').on('click', function () {
         var pushNotification = window.plugins.pushNotification;
@@ -322,11 +320,33 @@
       });
     });
     App.controller('graphs', function (page) {
-      var contentDOM = $(page).find('.page-content');
-      //Make a section for each sensor to watch for graphing
-      for(var i=0; i<app.sensorsToWatch.length; i++) {
-        contentDOM.append("<div class='app-section' id='lel"+app.sensorsToWatch[i]+"'></div>");
-      }
+      var contentDOM = $(page).find('.graphscontainer');
+
+      for(var data_array in app.sensor_data)
+      if(app.sensor_data[data_array].length > 0) {
+        //Make a section for each sensor to watch, for graphing
+        contentDOM.append("<div class='app-section' id='"+data_array+"'></div>");
+        //draw the graph if there is data
+        switch(data_array) {
+          case 'light_data':
+          //setTimeout to ensure the DOM is loaded
+          setTimeout(function() {
+            app.drawLightGraph();
+          },100);
+          break;
+          case 'accel_data':
+          setTimeout(function() {
+            app.drawAccelGraph();
+          },100);
+          break;
+        };
+      };
+      $(page).find('#clearbtn').on('click', function(){
+        //Empty stored sensor data
+        for(var data_array in app.sensor_data)
+        while(app.sensor_data[data_array].length > 0)
+        app.sensor_data[data_array].pop();
+      });
     });
     /*
     try {

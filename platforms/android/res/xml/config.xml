@@ -29,13 +29,14 @@
     <feature name="Compass">
         <param name="android-package" value="org.apache.cordova.deviceorientation.CompassListener" />
     </feature>
+    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <allow-intent href="market:*" />
-    <name>PushNotificationApp</name>
+    <name>SensorPush</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+        Sensor, graphing and notification pushing application that can operate with nodeRED
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="razvan_on@yahoo.com">
+        Razvan Onica
     </author>
     <content src="index.html" />
     <preference name="permissions" value="none" />

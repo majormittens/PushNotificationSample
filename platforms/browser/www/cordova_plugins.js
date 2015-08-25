@@ -151,7 +151,8 @@ module.exports.metadata =
     "com.example.hello": "0.7.0",
     "cordova-plugin-network-information": "1.0.2-dev",
     "org.awokenwell.proximity": "0.2.1",
-    "cordova-plugin-device-orientation": "1.0.1"
+    "cordova-plugin-device-orientation": "1.0.1",
+    "cordova-plugin-crosswalk-webview": "1.2.0"
 }
 // BOTTOM OF METADATA
 });

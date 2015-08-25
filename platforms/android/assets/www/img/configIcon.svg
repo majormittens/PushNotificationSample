@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    viewBox="0 0 32 32"
-   sodipodi:docname="iconConcept4.svg"
+   sodipodi:docname="configIcon.svg"
    enable-background="new">
   <defs
      id="defs3346">
@@ -150,16 +150,6 @@
          xChannelSelector="R"
          id="feDisplacementMap3989" />
     </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter3438">
-      <feBlend
-         inkscape:collect="always"
-         mode="screen"
-         in2="BackgroundImage"
-         id="feBlend3440" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -169,7 +159,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.197802"
-     inkscape:cx="-1.3717971"
+     inkscape:cx="-0.47693931"
      inkscape:cy="13.475658"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -189,7 +179,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -239,14 +229,14 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Layer 3"
-     style="display:inline;filter:url(#filter3438)">
+     style="display:inline;">
     <path
        sodipodi:type="star"
-       style="fill:#009688;fill-opacity:1;stroke:none;stroke-opacity:1"
+       style="fill:#00d4c7;fill-opacity:1;stroke:none;stroke-opacity:1"
        id="path3448"
        sodipodi:sides="10"
        sodipodi:cx="15.939069"
-       sodipodi:cy="16.061105"
+       sodipodi:cy="16.061106"
        sodipodi:r1="2.6509016"
        sodipodi:r2="3.8983846"
        sodipodi:arg1="0.74837805"

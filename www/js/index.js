@@ -33,19 +33,38 @@ var app = { //=/= App, an object of the App.js framework
   bindEvents: function() {
     document.addEventListener('deviceready', this.onDeviceReady, false);
   },
+  drawLightGraph : function() {
+    if($('.graphscontainer').length > 0)
+    MG.data_graphic({
+      title: 'Light Values',
+      description: 'Ambient light values.',
+      data: app.sensor_data.light_data, // an array of objects, such as [{value:100,date:...},...]
+      width: (0.9 * $('.graphscontainer').width()),
+      height: 250,
+      target: '#light_data', // the html element that the graphic is inserted in
+      x_accessor: 'timestamp',  // the key that accesses the x value
+      y_accessor: 'x', // the key that accesses the y value
+      show_tooltips: false
+    });
+  },
   onLightSuccess : function(ambientlight) {
     if(app.connected === true)
     app.sendPOST(ambientlight);
     /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
     'Timestamp: '      + ambientlight.timestamp);*/
-    app.light_data.push(ambientlight);
+    app.sensor_data.light_data.push(ambientlight);
+    app.drawLightGraph();
+  },
+  drawAccelGraph : function() {
+    //Do we have anything to render on?
+    if($('.graphscontainer').length > 0)
     MG.data_graphic({
-      title: 'Light Values',
-      description: 'Ambient light values.',
-      data: app.light_data, // an array of objects, such as [{value:100,date:...},...]
-      width: 500,
+      title: 'Accelerations',
+      description: 'X Acceleration values.',
+      data: app.sensor_data.accel_data, // an array of objects, such as [{value:100,date:...},...]
+      width: (0.9 * $('.graphscontainer').width()),
       height: 250,
-      target: '#plotarea', // the html element that the graphic is inserted in
+      target: '#accel_data', // the html element that the graphic is inserted in
       x_accessor: 'timestamp',  // the key that accesses the x value
       y_accessor: 'x', // the key that accesses the y value
       show_tooltips: false
@@ -58,18 +77,8 @@ var app = { //=/= App, an object of the App.js framework
     window.plugins.toast.showShortTop('Accels: ' + accelerations.x + '\n' +
     + accelerations.y + '\n' + accelerations.z + '\n' +
     'Timestamp: '      + accelerations.timestamp);
-    app.accel_data.push(accelerations);
-    MG.data_graphic({
-      title: 'Accelerations',
-      description: 'X Acceleration values.',
-      data: app.accel_data, // an array of objects, such as [{value:100,date:...},...]
-      width: 250,
-      height: 250,
-      target: '#'+TYPE_ACCELEROMETER, // the html element that the graphic is inserted in
-      x_accessor: 'timestamp',  // the key that accesses the x value
-      y_accessor: 'x', // the key that accesses the y value
-      show_tooltips: false
-    });
+    app.sensor_data.accel_data.push(accelerations);
+    app.drawAccelGraph();
   },
   sendPOST: function(content) {
     var req = new XMLHttpRequest();
@@ -90,11 +99,13 @@ var app = { //=/= App, an object of the App.js framework
   sensorList: "", /*JSONArray of sensor JSON data*/
   frequency: "10000", /*sampling frequency; by default: 10 seconds*/
   ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
-  connected: true,
+  connected: false,
   watching: false,
   watchIDs: {watchLightID : "", watchAccelID: "", watchProximID: ""}, //remember all started watchIDs
-  light_data: [],
-  accel_data: [],
+  sensor_data : {
+    light_data: [],
+    accel_data: []
+  },
   sensorsToWatch: [],
   implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT, TYPE_PROXIMITY],
   // deviceready Event Handler
@@ -104,8 +115,12 @@ var app = { //=/= App, an object of the App.js framework
   onDeviceReady: function() {
     console.log("device ready");
     App.load('home');
+    //Is the device connected to a network?
     if(navigator.connection.type == 'none')
     window.plugins.toast.showLongTop('No network connection enabled!');
+    else {
+      app.connected = true;
+    }
     var success = function(message) {
       app.sensorList = message;
       App.controller('sensors', function (page,sensorList) {
