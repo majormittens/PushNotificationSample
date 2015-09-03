@@ -48,6 +48,7 @@ var app = { //=/= App, an object of the App.js framework
     });
   },
   onLightSuccess : function(ambientlight) {
+    ambientlight.timestamp = (new Date(ambientlight.timestamp)).getSeconds();
     if(app.connected === true)
     app.sendPOST(ambientlight);
     /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
@@ -72,6 +73,7 @@ var app = { //=/= App, an object of the App.js framework
   },
   onAccelSuccess : function(accelerations) {
     console.log("Accel success handler!");
+    accelerations.timestamp = Math.floor(accelerations.timestamp / 1000);
     if(app.connected === true)
     app.sendPOST(accelerations);
     window.plugins.toast.showShortTop('Accels: ' + accelerations.x + '\n' +
@@ -84,10 +86,7 @@ var app = { //=/= App, an object of the App.js framework
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
       if (req.readyState==4 && (req.status==200 || req.status==0)) {
-        if(app.connected === false) {
-          app.connected = true;
-        }
-
+        //?
       }
     };
     req.open("POST", app.ip, true);
@@ -99,13 +98,16 @@ var app = { //=/= App, an object of the App.js framework
   sensorList: "", /*JSONArray of sensor JSON data*/
   frequency: "10000", /*sampling frequency; by default: 10 seconds*/
   ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
+  regid: "", //registration id
   connected: false,
+  registered: false, //with GCM
   watching: false,
   watchIDs: {watchLightID : "", watchAccelID: "", watchProximID: ""}, //remember all started watchIDs
   sensor_data : {
     light_data: [],
     accel_data: []
   },
+  red_data: {},
   sensorsToWatch: [],
   implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT, TYPE_PROXIMITY],
   // deviceready Event Handler
@@ -114,6 +116,10 @@ var app = { //=/= App, an object of the App.js framework
   // function, we must explicity call 'app.receivedEvent(...);'
   onDeviceReady: function() {
     console.log("device ready");
+    //Initial registration to make notification pop-ups work in foreground
+    window.plugins.pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,
+      {"senderID":"893347479423","ecb":"app.onNotificationGCM"});
+
     App.load('home');
     //Is the device connected to a network?
     if(navigator.connection.type == 'none')
@@ -172,6 +178,36 @@ var app = { //=/= App, an object of the App.js framework
   genericErrorHandler:function(error) {
     window.plugins.toast.showLongTop(error);
   },
+  redDataHandler : function(e) { //special notification payload
+    console.log(e.payload.title+" ; "+e.payload.message);
+    if(e.payload.title === "Data") {
+    app.red_data.placeholder = [];
+    var message = e.payload.message;
+    app.red_data.placeholder.push(message);
+  }
+    else {
+      App.dialog({
+        title        : e.title,
+        text         : e.message,
+        okButton     : 'Ok'
+      });
+    }
+  },
+  drawRedGraphs : function() {
+    //Do we have anything to render on?
+    if($('.redcontainer').length > 0)
+    for(var data_array in app.red_data)
+    MG.data_graphic({
+      title: 'Data from NodeRED',
+      data: app.red_data[data_array], // an array of objects, such as [{value:100,date:...},...]
+      width: (0.9 * $('.redcontainer').width()),
+      height: 250,
+      target: ('#'+ data_array), // the html element that the graphic is inserted in
+      x_accessor: 'x',  // the key that accesses the x value
+      y_accessor: 'y', // the key that accesses the y value
+      show_tooltips: false
+    });
+  },
   onNotificationGCM: function(e) {
     switch( e.event )
     {
@@ -179,19 +215,16 @@ var app = { //=/= App, an object of the App.js framework
       if ( e.regid.length > 0 )
       {
         console.log("Regid " + e.regid);
-        //alert('registration id = '+e.regid);
-        window.plugins.toast.showLongTop('GCM Registration id = '+e.regid);
-        app.sendPOST(e);
+        app.registered = true;
+        //app.sendPOST(e);
+        app.regid = e.regid; //store the latest regid
       }
       break;
 
       case 'message':
       // this is the actual push notification. its format depends on the data model from the push server
-      App.dialog({
-        title        : e.title,
-        text         : e.message,
-        okButton     : 'Ok'
-      });
+      console.log(e);
+      app.redDataHandler(e);
       break;
 
       case 'error':

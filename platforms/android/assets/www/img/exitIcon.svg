@@ -158,9 +158,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.197802"
-     inkscape:cx="-0.47693931"
-     inkscape:cy="18.891026"
-     inkscape:current-layer="layer6"
+     inkscape:cx="-6.1323859"
+     inkscape:cy="19.059059"
+     inkscape:current-layer="g4339"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
@@ -221,13 +221,13 @@
          inkscape:connector-curvature="0"
          id="path4322"
          d="m 13.931305,16.104023 7.14426,0 0,-0.0893 -2.589794,-1.875368"
-         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         style="fill:none;fill-rule:evenodd;stroke:#008453;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="cccc"
          inkscape:connector-curvature="0"
          id="path4322-1"
          d="m 13.949214,17.615721 7.14426,0 0,0.0893 -2.589794,1.875368"
-         style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+         style="display:inline;fill:none;fill-rule:evenodd;stroke:#118c5e;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
   </g>
 </svg>

@@ -80,62 +80,99 @@
     transition: transform .6s linear;
   }
 
-  /*Fancy flash effect on tap */
-
+  /*Fancy flash effect on tap
   @-webkit-keyframes flash {
-    0% {
-      opacity: 1;
-    }
-    25% {
-      opacity: 0.5;
-    }
-    50% {
-      opacity: 0;
-    }
-    75% {
-      opacity: 0.5;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
+  0% {
+  opacity: 1;
+}
+25% {
+opacity: 0.5;
+}
+50% {
+opacity: 0;
+}
+75% {
+opacity: 0.5;
+}
+100% {
+opacity: 1;
+}
+}*/
 
-  .shadow {
-    -webkit-filter: drop-shadow( -5px -5px 5px #00665B );
-    filter: drop-shadow( -5px -5px 5px #00665B ); /* Same syntax as box-shadow */
+.shadow {
+  -webkit-filter: drop-shadow( -5px -5px 5px #00665B );
+  filter: drop-shadow( -5px -5px 5px #00665B ); /* Same syntax as box-shadow */
 
-    width: 325%;
-    position: absolute;
-    right: 10%;
-    top: 5%;
-  }
+  width: 325%;
+  position: absolute;
+  right: 10%;
+  top: 5%;
+}
 
-  label {
-    font-size: 150%;
-  }
+label {
+  font-size: 150%;
+}
 
-  input[type=checkbox] {
-    transform: scale(4);
-    float: right;
-    margin-top: 13%;
-    margin-right: 3%;
-  }
-  #sensorname {
-    font-size: 16px;
-    float: left;
-  }
+input[type=checkbox] {
+  transform: scale(4);
+  float: right;
+  margin-top: 17%;
+  margin-right: 3%;
+}
+#sensorname {
+  font-size: 16px;
+  float: left;
+}
 
-  /*Larger fonts in teal buttons*/
-  .app-button.teal {
-    font-size: 20px;
-  }
+/*Larger fonts in teal buttons*/
+.app-button.teal {
+  font-size: 20px;
+}
 
-  /*Various label font size adjustments*/
-  #rangelabel, #connectlabel {
-    font-size: 16px;
-  }
+/*Various label font size adjustments*/
+#rangelabel, #connectlabel {
+  font-size: 16px;
+}
 
-  </style>
+#rangelabel {
+  font-size: 50px;
+  font-weight: 100;
+  font-style: oblique;
+  height: 90px;
+  text-align: center;
+  padding-top: 5%;
+  text-transform: lowercase;
+}
+
+#ip {
+  font-size: 30px;
+  font-weight: 100;
+  font-style: oblique;
+  height: 90px;
+  text-align: center;
+  padding-top: 5%;
+  color: teal;
+}
+
+#samplingrange {
+  width: 50%;
+  margin-left: 25%;
+  margin-top: 2.2%;
+  transform: scale(2);
+}
+
+/*Prevent background from changing for triangle button*/
+#dropdownbtn.active {
+  background-color: #009688;
+  /*-webkit-animation: flash .1s infinite;*/
+}
+
+/*Generic hidden class*/
+.hidden {
+  display: none;
+}
+
+</style>
 </head>
 
 <body>
@@ -151,7 +188,7 @@
   <div class="app-page" data-page="home">
     <div class="app-topbar">
       <div class="app-title">Sensor app</div>
-      <div class="app-button right" data-target="connect">
+      <div class="app-button right" id="dropdownbtn" data-target="connect">
         <img src="img/playIcon.svg" class="shadow"/>
       </div>
     </div>
@@ -216,12 +253,12 @@
       <div class="app-content">
         <div class="app-section">
           <ul class="app-list">
-            <label id="connectlabel">Synced:</label>
+            <label id="connectlabel">Online:</label>
           </ul>
           <div class="app-button teal" id="connectbtn">Sync Registration ID</div>
         </div>
         <div class="app-section">
-          <div class="app-button teal" id="watchbtn">Toggle sensor sampling</div>
+          <div class="app-button teal" id="watchbtn">Press to start/stop recording</div>
         </div>
       </div>
     </div>
@@ -233,7 +270,12 @@
         <div class="app-button right" id="clearbtn">Clear all</div>
       </div>
       <div class="app-content">
-        <div class="graphscontainer"></div>
+        <div class="graphscontainer">
+          <ul class="app-list"><label id="inputslabel">Inputs</label></ul>
+        </div>
+        <div class="redcontainer">
+          <ul class="app-list"><label id="outputslabel">Outputs</label></ul>
+        </div>
       </div>
     </div>
 
@@ -266,7 +308,7 @@
     App.controller('configure', function (page) {
       this.transition = 'rotate-left';
       var rangelabelholder = $(page).find('#rangelabel');
-      rangelabelholder.text(app.frequency+' [ms]');
+      rangelabelholder.text(app.frequency+' ms');
       var samplingholder = $(page).find('#samplingrange');
       samplingholder.value = app.frequency;
       var ipholder = $(page).find('#ip');
@@ -275,7 +317,7 @@
       $(page).find('#samplingbtn').on('click', function () {
         sampleval=samplingholder.val();
         app.frequency=sampleval;
-        rangelabelholder.text(app.frequency+' [ms]');
+        rangelabelholder.text(app.frequency+' ms');
       });
       $(page).find('#ipbtn').on('click', function () {
         var ipval=$(page).find("#ip").val();
@@ -286,18 +328,21 @@
         }
       });
       samplingholder.on('input', function () {
-        rangelabelholder.text(samplingholder.val()+' [ms]');
+        rangelabelholder.text(samplingholder.val()+' ms');
       });
     });
     App.controller('connect', function (page) {
       this.transition = 'slide-down';
+      if(navigator.connection.type != 'none')
+      app.connected = true;
+      else {
+        app.connected = false;
+      }
+
       $(page).find('#connectlabel').text('Online: '+app.connected);
       $(page).find('#watchbtn').text('Sampling: '+app.watching);
       $(page).find('#connectbtn').on('click', function () {
-        var pushNotification = window.plugins.pushNotification;
-        pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,{"senderID":"893347479423","ecb":"app.onNotificationGCM"});
-
-        $(page).find('#connectlabel').text('Synced: '+app.connected);
+      app.sendPOST(app.regid);
       });
       $(page).find('#watchbtn').on('click', function () {
         //Here be dragons
@@ -321,9 +366,11 @@
     });
     App.controller('graphs', function (page) {
       var contentDOM = $(page).find('.graphscontainer');
+      var noSensorData = true;
 
       for(var data_array in app.sensor_data)
       if(app.sensor_data[data_array].length > 0) {
+        noSensorData = false;
         //Make a section for each sensor to watch, for graphing
         contentDOM.append("<div class='app-section' id='"+data_array+"'></div>");
         //draw the graph if there is data
@@ -341,11 +388,34 @@
           break;
         };
       };
+
+      var redDOM = $(page).find('.redcontainer');
+      var noRedData = true;
+      for(var data_array in app.red_data)
+      if(app.red_data[data_array].length > 0) {
+        noRedData = false;
+        //Make a section for data from nodeRED
+        redDOM.append("<div class='app-section' id='"+data_array+"'></div>");
+        //draw all red graphs
+        setTimeout(function() {
+          app.drawRedGraphs();
+        },100);
+      };
+
+      if(noSensorData === true && noRedData === true){
+      window.plugins.toast.showLongCenter('No data available yet!');
+      }
+
       $(page).find('#clearbtn').on('click', function(){
         //Empty stored sensor data
         for(var data_array in app.sensor_data)
         while(app.sensor_data[data_array].length > 0)
         app.sensor_data[data_array].pop();
+
+        //Empty stored red data
+        for(var data_array in app.red_data)
+        while(app.red_data[data_array].length > 0)
+        app.red_data[data_array].pop();
       });
     });
     /*
