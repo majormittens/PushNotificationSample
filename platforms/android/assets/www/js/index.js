@@ -181,9 +181,15 @@ var app = { //=/= App, an object of the App.js framework
   redDataHandler : function(e) { //special notification payload
     console.log(e.payload.title+" ; "+e.payload.message);
     if(e.payload.title === "Data") {
-    app.red_data.placeholder = [];
     var message = e.payload.message;
-    app.red_data.placeholder.push(message);
+    if(message.hasOwnProperty('arrayname') && app.red_data.hasOwnProperty(message.arrayname)) {
+    app.red_data[message.arrayname].push(message);
+  }
+  else if (message.hasOwnProperty('arrayname')) {
+    app.red_data[message.arrayname] = [];
+    app.red_data[message.arrayname].push(message);
+  }
+  app.drawRedGraphs();
   }
     else {
       App.dialog({
