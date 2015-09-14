@@ -100,6 +100,11 @@ module.exports = [
         "clobbers": [
             "navigator.compass"
         ]
+    },
+    {
+        "file": "plugins/com.chariotsolutions.nfc.plugin/www/phonegap-nfc.js",
+        "id": "com.chariotsolutions.nfc.plugin.NFC",
+        "runs": true
     }
 ];
 module.exports.metadata = 
@@ -113,7 +118,8 @@ module.exports.metadata =
     "cordova-plugin-network-information": "1.0.2-dev",
     "org.awokenwell.proximity": "0.2.1",
     "cordova-plugin-device-orientation": "1.0.1",
-    "cordova-plugin-crosswalk-webview": "1.2.0"
+    "cordova-plugin-crosswalk-webview": "1.2.0",
+    "com.chariotsolutions.nfc.plugin": "0.6.2"
 }
 // BOTTOM OF METADATA
 });

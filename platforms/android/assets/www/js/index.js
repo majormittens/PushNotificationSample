@@ -20,8 +20,22 @@
 var TYPE_ACCELEROMETER = "1";
 var TYPE_LIGHT = "5";
 var TYPE_PROXIMITY = "8";
+var TYPE_ORIENTATION = "3";
 
 var app = { //=/= App, an object of the App.js framework
+  sensorsToWatch: [],
+  implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT, TYPE_PROXIMITY, TYPE_ORIENTATION],
+  options : {
+    sensorList: "", /*JSONArray of sensor JSON data*/
+    frequency: "10000", /*sampling frequency; by default: 10 seconds*/
+    ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
+    regid: "", //registration id
+    connected: false, //wifi or mobile data
+    registered: false, //with GCM
+    watching: false,
+    //Track nfc listener
+    taglistening : false
+  },
   // Application Constructor
   initialize: function() {
     this.bindEvents();
@@ -33,83 +47,112 @@ var app = { //=/= App, an object of the App.js framework
   bindEvents: function() {
     document.addEventListener('deviceready', this.onDeviceReady, false);
   },
-  drawLightGraph : function() {
+  sensorKeys : function() {
+    var objects = [];
+    for(var property in app)
+    //find sensor objects
+    if(app[property].hasOwnProperty('data') && app[property].hasOwnProperty('target'))
+    objects.push(property);
+    return objects;
+  },
+  drawGraph : function(sensor) {
+    console.log(sensor);
     if($('.graphscontainer').length > 0)
     MG.data_graphic({
-      title: 'Light Values',
-      description: 'Ambient light values.',
-      data: app.sensor_data.light_data, // an array of objects, such as [{value:100,date:...},...]
+      title: sensor.title,
+      description: sensor.description,
+      data: sensor.data, // an array of objects, such as [{value:100,date:...},...]
       width: (0.9 * $('.graphscontainer').width()),
       height: 250,
-      target: '#light_data', // the html element that the graphic is inserted in
-      x_accessor: 'timestamp',  // the key that accesses the x value
-      y_accessor: 'x', // the key that accesses the y value
+      target: ('#'+sensor.target), // the html element that the graphic is inserted in
+      x_accessor: sensor.x,  // the key that accesses the x value
+      y_accessor: sensor.y, // the key that accesses the y value
       show_tooltips: false
     });
   },
-  onLightSuccess : function(ambientlight) {
-    ambientlight.timestamp = (new Date(ambientlight.timestamp)).getSeconds();
-    if(app.connected === true)
-    app.sendPOST(ambientlight);
-    /*window.plugins.toast.showShortTop('Ambient Light [Lux]: ' + ambientlight.x + '\n' +
-    'Timestamp: '      + ambientlight.timestamp);*/
-    app.sensor_data.light_data.push(ambientlight);
-    app.drawLightGraph();
+  light : {
+    type: TYPE_LIGHT,
+    watchID : "",
+    data : [],
+    title: 'Light Values',
+    description: 'Ambient light values.',
+    target: 'light_data',
+    x : 'timestamp',
+    y : 'x',
+    onSuccess : function(ambientlight) {
+      ambientlight.timestamp = (new Date(ambientlight.timestamp)).getSeconds();
+      app.nodered.post(ambientlight);
+      app.light.data.push(ambientlight);
+      app.drawGraph(app.light);
+    },
+    startWatch: function(t) {
+      var options = { frequency: t };  // Update every t seconds
+      app.light.watchID = navigator.photodiode.watchLight(app.light.onSuccess, app.genericErrorHandler, options);
+    },
+    stopWatch: function() {
+      navigator.photodiode.clearWatch(app.light.watchID);
+    }
   },
-  drawAccelGraph : function() {
-    //Do we have anything to render on?
-    if($('.graphscontainer').length > 0)
-    MG.data_graphic({
-      title: 'Accelerations',
-      description: 'X Acceleration values.',
-      data: app.sensor_data.accel_data, // an array of objects, such as [{value:100,date:...},...]
-      width: (0.9 * $('.graphscontainer').width()),
-      height: 250,
-      target: '#accel_data', // the html element that the graphic is inserted in
-      x_accessor: 'timestamp',  // the key that accesses the x value
-      y_accessor: 'x', // the key that accesses the y value
-      show_tooltips: false
-    });
+  acceleration : {
+    type: TYPE_ACCELEROMETER,
+    watchID : "",
+    data : [],
+    title: 'Accelerations',
+    description: 'X Acceleration values.',
+    target: 'accel_data', // the html element that the graphic is inserted in
+    x : 'timestamp',  // the key that accesses the x value
+    y : 'x', // the key that accesses the y value
+    onSuccess : function(accelerations) {
+      accelerations.timestamp = (new Date(accelerations.timestamp)).getSeconds();
+      app.nodered.post(accelerations);
+      app.acceleration.data.push(accelerations);
+      app.drawGraph(app.acceleration);
+    },
+    startWatch: function(t) {
+      console.log("started accel watch");
+      var options = { frequency: t };  // Update every t seconds
+      app.acceleration.watchID = navigator.accelerometer.watchAcceleration(app.acceleration.onSuccess, app.genericErrorHandler, options);
+    },
+    stopWatch: function() {
+      navigator.accelerometer.clearWatch(app.acceleration.watchID);
+    }
   },
-  onAccelSuccess : function(accelerations) {
-    console.log("Accel success handler!");
-    accelerations.timestamp = Math.floor(accelerations.timestamp / 1000);
-    if(app.connected === true)
-    app.sendPOST(accelerations);
-    window.plugins.toast.showShortTop('Accels: ' + accelerations.x + '\n' +
-    + accelerations.y + '\n' + accelerations.z + '\n' +
-    'Timestamp: '      + accelerations.timestamp);
-    app.sensor_data.accel_data.push(accelerations);
-    app.drawAccelGraph();
+  orientation : {
+    type: TYPE_ORIENTATION,
+    watchID : "",
+    data : [],
+    title: 'Orientation',
+    description: 'Device orientation',
+    target: 'orientation_data',
+    x : 'timestamp',
+    y : 'magneticHeading',
+    onSuccess : function(heading) {
+      heading.timestamp = (new Date(heading.timestamp)).getSeconds();
+      app.nodered.post(heading);
+      app.orientation.data.push(heading);
+      app.drawGraph(app.orientation);
+    },
+    startWatch: function(t) {
+      var options = { frequency: t };  // Update every t seconds
+      app.orientation.watchID = navigator.compass.watchHeading(app.orientation.onSuccess, app.genericErrorHandler, options);
+    },
+    stopWatch: function() {
+      navigator.compass.clearWatch(app.orientation.watchID);
+    }
   },
-  sendPOST: function(content) {
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function() {
-      if (req.readyState==4 && (req.status==200 || req.status==0)) {
-        //?
+  tagbtncallback : function(nfcEvent) {
+    //alert(JSON.stringify(nfcEvent.tag));
+    App.dialog({
+      title        : 'Quit',
+      text         : JSON.stringify(nfcEvent.tag),
+      cancelButton : 'Dismiss',
+      okButton     : 'Send to nodeRED'
+    }, function (ok) {
+      if (ok) {
+        app.nodered.post(nfcEvent.tag);
       }
-    };
-    req.open("POST", app.ip, true);
-    req.setRequestHeader('Content-type','application/json; charset=utf-8');
-    var postContent = JSON.stringify(content);
-    req.send(postContent);
+    });
   },
-  //Options:
-  sensorList: "", /*JSONArray of sensor JSON data*/
-  frequency: "10000", /*sampling frequency; by default: 10 seconds*/
-  ip: "https://www.e-osu.si/umkoapi/test",//"178.172.46.5",
-  regid: "", //registration id
-  connected: false,
-  registered: false, //with GCM
-  watching: false,
-  watchIDs: {watchLightID : "", watchAccelID: "", watchProximID: ""}, //remember all started watchIDs
-  sensor_data : {
-    light_data: [],
-    accel_data: []
-  },
-  red_data: {},
-  sensorsToWatch: [],
-  implementedSensors: [TYPE_ACCELEROMETER, TYPE_LIGHT, TYPE_PROXIMITY],
   // deviceready Event Handler
   //
   // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -120,127 +163,140 @@ var app = { //=/= App, an object of the App.js framework
     window.plugins.pushNotification.register(app.genericSuccessHandler, app.genericErrorHandler,
       {"senderID":"893347479423","ecb":"app.onNotificationGCM"});
 
-    App.load('home');
-    //Is the device connected to a network?
-    if(navigator.connection.type == 'none')
-    window.plugins.toast.showLongTop('No network connection enabled!');
-    else {
-      app.connected = true;
-    }
-    var success = function(message) {
-      app.sensorList = message;
-      App.controller('sensors', function (page,sensorList) {
-        this.transition = 'rotate-right';
-        var sensors = $(page).find('.app-list');
-        for(var item in app.sensorList) {
-          var checked = '';
-          //Is the sensor selected?
-          if(app.sensorsToWatch.indexOf(app.sensorList[item].type+"")>-1)
-          checked = 'checked';
-          var CHECKBOXHTML = "<input type='checkbox' id='sensorbox' "+checked+" name="+app.sensorList[item].type+">";
-          //is the sensor implemented?
-          if(app.implementedSensors.indexOf(app.sensorList[item].type+"")<0)
-          CHECKBOXHTML = '';
-          sensors.append("<label><div id='sensorname'>"+app.sensorList[item].name+"</div>"+CHECKBOXHTML+"</label>");
-          for(var prop in app.sensorList[item])
-          if(prop!="name")
-          sensors.append('<li>'+prop+' : '+app.sensorList[item][prop]+'</li>');
-        }
-
-        $(page).find('#applybtn').on('click', function () {
-          var checkboxes = $(page).find('#sensorbox');
-          for(var box in checkboxes) {
-            if(checkboxes[box].checked == true && app.sensorsToWatch.indexOf(checkboxes[box].name)<0)
-            app.sensorsToWatch.push(checkboxes[box].name);
-            else
-            if(checkboxes[box].checked == false && app.sensorsToWatch.indexOf(checkboxes[box].name)>=0)
-            app.sensorsToWatch.splice(app.sensorsToWatch.indexOf(checkboxes[box].name),1);
-          }
-          console.log(app.sensorsToWatch);
-        });
-      });
-
-    };
-    hello.greet("lol", success, app.genericErrorHandler);
-  },
-  startLightWatch: function(t) {
-    var options = { frequency: t };  // Update every t seconds
-    app.watchIDs.watchLightID = navigator.photodiode.watchLight(app.onLightSuccess, app.genericErrorHandler, options);
-  },
-  startAccelWatch: function(t) {
-    console.log("started accel watch");
-    var options = { frequency: t };  // Update every t seconds
-    app.watchIDs.watchAccelID = navigator.accelerometer.watchAcceleration(app.onAccelSuccess, app.genericErrorHandler, options);
-  },
-  genericSuccessHandler: function(result) {
-    console.log(result);
-  },
-  genericErrorHandler:function(error) {
-    window.plugins.toast.showLongTop(error);
-  },
-  redDataHandler : function(e) { //special notification payload
-    console.log(e.payload.title+" ; "+e.payload.message);
-    if(e.payload.title === "Data") {
-    var message = e.payload.message;
-    if(message.hasOwnProperty('arrayname') && app.red_data.hasOwnProperty(message.arrayname)) {
-    app.red_data[message.arrayname].push(message);
-  }
-  else if (message.hasOwnProperty('arrayname')) {
-    app.red_data[message.arrayname] = [];
-    app.red_data[message.arrayname].push(message);
-  }
-  app.drawRedGraphs();
-  }
-    else {
-      App.dialog({
-        title        : e.title,
-        text         : e.message,
-        okButton     : 'Ok'
-      });
-    }
-  },
-  drawRedGraphs : function() {
-    //Do we have anything to render on?
-    if($('.redcontainer').length > 0)
-    for(var data_array in app.red_data)
-    MG.data_graphic({
-      title: 'Data from NodeRED',
-      data: app.red_data[data_array], // an array of objects, such as [{value:100,date:...},...]
-      width: (0.9 * $('.redcontainer').width()),
-      height: 250,
-      target: ('#'+ data_array), // the html element that the graphic is inserted in
-      x_accessor: 'x',  // the key that accesses the x value
-      y_accessor: 'y', // the key that accesses the y value
-      show_tooltips: false
-    });
-  },
-  onNotificationGCM: function(e) {
-    switch( e.event )
-    {
-      case 'registered':
-      if ( e.regid.length > 0 )
-      {
-        console.log("Regid " + e.regid);
-        app.registered = true;
-        //app.sendPOST(e);
-        app.regid = e.regid; //store the latest regid
+      App.load('home');
+      //Is the device connected to a network?
+      if(navigator.connection.type == 'none')
+      window.plugins.toast.showLongTop('No network connection enabled!');
+      else {
+        app.options.connected = true;
       }
-      break;
 
-      case 'message':
-      // this is the actual push notification. its format depends on the data model from the push server
-      console.log(e);
-      app.redDataHandler(e);
-      break;
+      hello.greet("lol", function(message) {
+        app.options.sensorList = message;
+        App.controller('sensors', function (page,sensorList) {
+          this.transition = 'rotate-right';
+          var sensors = $(page).find('.app-list');
+          for(var item in app.options.sensorList) {
+            var checked = '';
+            //Is the sensor selected?
+            if(app.sensorsToWatch.indexOf(app.options.sensorList[item].type+"")>-1)
+            checked = 'checked';
+            var CHECKBOXHTML = "<input type='checkbox' id='sensorbox' "+checked+" name="+app.options.sensorList[item].type+">";
+            //is the sensor implemented?
+            if(app.implementedSensors.indexOf(app.options.sensorList[item].type+"")<0)
+            CHECKBOXHTML = '';
+            sensors.append("<label><div id='sensorname'>"+app.options.sensorList[item].name+"</div>"+CHECKBOXHTML+"</label>");
+            for(var prop in app.options.sensorList[item])
+            if(prop!="name")
+            sensors.append('<li>'+prop+' : '+app.options.sensorList[item][prop]+'</li>');
+          }
 
-      case 'error':
-      alert('GCM error = '+e.msg);
-      break;
+          $(page).find('#applybtn').on('click', function () {
+            var checkboxes = $(page).find('#sensorbox');
+            for(var box in checkboxes) {
+              if(checkboxes[box].checked == true && app.sensorsToWatch.indexOf(checkboxes[box].name)<0)
+              app.sensorsToWatch.push(checkboxes[box].name);
+              else
+              if(checkboxes[box].checked == false && app.sensorsToWatch.indexOf(checkboxes[box].name)>=0)
+              app.sensorsToWatch.splice(app.sensorsToWatch.indexOf(checkboxes[box].name),1);
+            }
+            console.log(app.sensorsToWatch);
+          });
+        });
+      }, app.genericErrorHandler);
+    },
+    startOrientationWatch: function(t) {
+      console.log("started orientation watch");
+      var options = { frequency: t };  // Update every t seconds
+      app.watchIDs.watchOrientationID = navigator.compass.watchHeading(app.onOrientationSuccess, app.genericErrorHandler, options);
+    },
+    genericSuccessHandler: function(result) {
+      console.log(result);
+    },
+    genericErrorHandler:function(error) {
+      window.plugins.toast.showLongTop(error);
+    },
+    nodered : {
+      data : {},
+      dataHandler : function(e) { //special notification payload
+        console.log(e.payload.title+" ; "+e.payload.message);
+        if(e.payload.title === "Data") {
+          var message = e.payload.message;
+          if(message.hasOwnProperty('arrayname') && app.nodered.data.hasOwnProperty(message.arrayname)) {
+            app.nodered.data[message.arrayname].push(message);
+          }
+          else if (message.hasOwnProperty('arrayname')) {
+            app.nodered.data[message.arrayname] = [];
+            app.nodered.data[message.arrayname].push(message);
+          }
+          app.nodered.drawGraphs();
+        }
+        else {
+          App.dialog({
+            title        : e.title,
+            text         : e.message,
+            okButton     : 'Ok'
+          });
+        }
+      },
+      drawGraphs : function() {
+        //Do we have anything to render on?
+        if($('.redcontainer').length > 0)
+        for(var data_array in app.nodered.data)
+        MG.data_graphic({
+          title: 'Data from NodeRED',
+          data: app.nodered.data[data_array], // an array of objects, such as [{value:100,date:...},...]
+          width: (0.9 * $('.redcontainer').width()),
+          height: 250,
+          target: ('#'+ data_array), // the html element that the graphic is inserted in
+          x_accessor: 'x',  // the key that accesses the x value
+          y_accessor: 'y', // the key that accesses the y value
+          show_tooltips: false
+        });
+      },
+        post : function(content) {
+          if(app.options.connected === false)
+          return;
+          var req = new XMLHttpRequest();
+          req.onreadystatechange = function() {
+            if (req.readyState==4 && (req.status==200 || req.status==0)) {
+              //?
+            }
+          };
+          req.open("POST", app.options.ip, true);
+          req.setRequestHeader('Content-type','application/json; charset=utf-8');
+          var postContent = JSON.stringify(content);
+          req.send(postContent);
+        }
+    },
 
-      default:
-      alert('An unknown GCM event has occurred');
-      break;
+    onNotificationGCM: function(e) {
+      switch( e.event )
+      {
+        case 'registered':
+        if ( e.regid.length > 0 )
+        {
+          console.log("Regid " + e.regid);
+          app.options.registered = true;
+          //app.nodered.post(e);
+          app.options.regid = e.regid; //store the latest regid
+        }
+        break;
+
+        case 'message':
+        // this is the actual push notification. its format depends on the data model from the push server
+        console.log(e);
+        app.nodered.dataHandler(e);
+        break;
+
+        case 'error':
+        alert('GCM error = '+e.msg);
+        break;
+
+        default:
+        alert('An unknown GCM event has occurred');
+        break;
+      }
     }
-  }
 
-};
+  };
